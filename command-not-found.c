@@ -137,6 +137,7 @@ int main(int argc, char *argv[]) {
 	if (!package)
 		goto bail;
 	package++;
+	*strchrnul(package, '\n') = '\0';
 	dprintf(2, _("The program '%s' is currently not installed. "), command);
 	if (is_root()) {
 		dprintf(2, _("You can install it by typing:\n"));
