@@ -63,7 +63,12 @@ int main(int argc, char *argv[]) {
 	char *prefixes[] = {"/usr/bin/", "/usr/sbin/", "/bin/", "/sbin/",
 			"/usr/local/bin/", "/usr/games/", NULL};
 
-	if (strncmp(argv[1], "--", strlen("--")) == 0) {
+	if (argc != 2 && argc != 3) {
+		dprintf(2, "Wrong number of arguments.\n");
+		return EXIT_FAILURE;
+	}
+
+	if (argc == 3 && strncmp(argv[1], "--", strlen("--")) == 0) {
 		if (strcmp(argv[1], "--ignore-installed") == 0)
 			arg_ignore_installed = true;
 		command = argv[2];
@@ -125,7 +130,7 @@ int main(int argc, char *argv[]) {
 		goto fail;
 	s = fgets((char *)&buf, sizeof(buf), f);
 	if (!s)
-		goto fail;
+		goto bail;
 	if (strlen(buf) == 0)
 		goto bail;
 	package = strchr(buf, '\xff');
@@ -147,6 +152,7 @@ int main(int argc, char *argv[]) {
 	return EXIT_SUCCESS;
 fail:
 	fputs(strerror(errno), stderr);
+	fputc('\n', stderr);
 	return EXIT_FAILURE;
 bail:
 	dprintf(2, "%s: command not found\n", command);
