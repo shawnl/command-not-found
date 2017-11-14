@@ -2,4 +2,8 @@
 # (C) 2017 Shawn Landden <slandden@gmail.com> GPL 2+
 ls /var/lib/apt/lists | grep --exclude=diff_Index Contents-`dpkg --print-architecture` | while read -r line; do
 	/usr/lib/apt/apt-helper cat-file /var/lib/apt/lists/$line | grep -e ^bin/ -e ^sbin/ -e ^usr/bin/ -e ^usr/sbin/ -e ^usr/games/;
-done | sed 's/^[^ ]*\/\([^ ]*\) *[^ \n]*\/\([^ \n]*\)$/\1\xff\2/' | LC_ALL=C sort > /var/cache/command-not-found/db
+done | sed 's/^[^ \n\t]*\/\([^ \t\n]*\)[ \t]*[^ \t\n]*\/\([^ \t\n]*\)$/\1\xff\2/' | LC_ALL=C sort > /var/cache/command-not-found/db
+filesize=$(stat -c '%s' /var/cache/command-not-found/db)
+if [ $filesize = 0 ]; then
+       echo "Database empty"
+fi
