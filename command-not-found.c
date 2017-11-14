@@ -123,10 +123,9 @@ int main(int argc, char *argv[]) {
 	f = popen(v, "r");
 	if (!f)
 		goto fail;
-	fgets((char *)&buf, sizeof(buf), f);
-	r = pclose(f);
-	if (r != 0)
-		goto bail;
+	s = fgets((char *)&buf, sizeof(buf), f);
+	if (!s)
+		goto fail;
 	if (strlen(buf) == 0)
 		goto bail;
 	package = strchr(buf, '\xff');
