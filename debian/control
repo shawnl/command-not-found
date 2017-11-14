@@ -17,4 +17,4 @@ Description: Suggest installation of packages in interactive bash sessions
  programs not currently installed but available from the repositories.
  .
  This package has a smaller database and uses significantly less memory
- than command-not-found, and drops the python dependancy.
+ than command-not-found, and does not depend on python.
