@@ -35,18 +35,22 @@
 bool arg_ignore_installed = false;
 
 int can_sudo() {
-	struct group *grp;
+	struct group *adm, *sudo;
 	gid_t mygroups[1024];
 	int r;
 
-	grp = getgrnam("adm");
+	adm = getgrnam("adm");
+	sudo = getgrnam("sudo");
+	if (!adm || !sudo)
+		return -errno;
 	r = getgroups(sizeof(mygroups) / sizeof(gid_t), mygroups);
 	if (r < 0)
 		return -errno;
 
 	for (int i = 0; i < r; i++)
-		if (mygroups[i] == grp->gr_gid)
+		if (mygroups[i] == adm->gr_gid || mygroups[i] == sudo->gr_gid)
 			return 0;
+
 	return -ENOENT;
 }
 
