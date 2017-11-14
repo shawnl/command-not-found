@@ -1,0 +1,5 @@
+#!/bin/sh
+# (C) 2017 Shawn Landden <slandden@gmail.com> GPL 2+
+ls /var/lib/apt/lists | grep --exclude=diff_Index Contents-`dpkg --print-architecture` | while read -r line; do
+	/usr/lib/apt/apt-helper cat-file /var/lib/apt/lists/$line | grep -e ^bin/ -e ^sbin/ -e ^usr/bin/ -e ^usr/sbin/ -e ^usr/games/;
+done | sed 's/^[^ ]*\/\([^ ]*\) *[^ \n]*\/\([^ \n]*\)$/\1\\x00\2/' | sort > /var/cache/command-not-found/db

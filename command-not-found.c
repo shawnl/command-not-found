@@ -1,3 +1,20 @@
+/* command-not-found, finds programs
+ * Copyright (C) 2017  Shawn Landden <slandden@gmail.com>
+ *
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation; either version 2
+ * of the License, or (at your option) any later version.
+
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+ */
 #define _GNU_SOURCE
 #include <errno.h>
 #include <grp.h>
@@ -75,7 +92,7 @@ int main(int argc, char *argv[]) {
 				dprintf(2, _("This is most likely caused by the"\
 " lack of administrative priviledges associated with your user account.\n"));
 			return EXIT_SUCCESS;
-		} while (path = strchrnul(path, ':') + 1);
+		} while ((path = strchrnul(path, ':') + 1));
 
 		if (arg_ignore_installed)
 			break;
