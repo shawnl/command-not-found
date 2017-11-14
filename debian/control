@@ -1,0 +1,20 @@
+Source: command-not-found-ng
+Section: admin
+Priority: optional
+Maintainer: Shawn Landden <slandden@gmail.com>
+Build-Depends: debhelper (>= 10)
+Standards-Version: 4.1.1.1
+
+Package: command-not-found-ng
+Architecture: any
+#also sh
+Depends: grep, sed, coreutils
+Suggests: apt-file (>= 3.0~exp1~)
+Replaces: command-not-found
+Breaks: command-not-found
+Description: Suggest installation of packages in interactive bash sessions
+ This package will install handler for command_not_found that looks up
+ programs not currently installed but available from the repositories.
+ .
+ This package has a smaller database and uses significantly less memory
+ than command-not-found, and drops the python dependancy.
