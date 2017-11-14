@@ -1,3 +1,4 @@
+
 /* command-not-found, finds programs
  * Copyright (C) 2017  Shawn Landden <slandden@gmail.com>
  *
@@ -116,7 +117,7 @@ int main(int argc, char *argv[]) {
 	}
 	sz = asprintf(&v, "/usr/share/command-not-found/pts_lbsearch -p "\
 			"/var/cache/command-not-found/db "\
-			"%s\0", command);
+			"%s\xff", command);
 	if (sz < 0)
 		goto fail;
 	f = popen(v, "r");
@@ -128,7 +129,10 @@ int main(int argc, char *argv[]) {
 		goto bail;
 	if (strlen(buf) == 0)
 		goto bail;
-	package = &buf[strlen(buf) + 1];
+	package = strchr(buf, '\xff');
+	if (!package)
+		goto bail;
+	package++;
 	dprintf(2, _("The program '%s' is currently not installed. "), command);
 	if (is_root()) {
 		dprintf(2, _("You can install it by typing:\n"));
