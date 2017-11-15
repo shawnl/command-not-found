@@ -31,6 +31,7 @@
 #define _ gettext
 
 #include "command-not-found.h"
+#include "pts_lbsearch.h"
 
 bool arg_ignore_installed = false;
 
@@ -56,6 +57,32 @@ int can_sudo() {
 
 bool is_root() {
 	return (geteuid() == 0);
+}
+
+int get_entry(char *out, char *command) {
+	static int pipefd[2] = {-1, -1}
+	if (pipefd[0] < 0 || pipefd[1] < 0) {
+		r = pipe(pipefd);
+		if (r < 0)
+			return -errno;
+	}
+	sz = asprintf(&v, "%s\xff", command);
+	if (sz < 0)
+		return -ENOMEM;
+	r = pts_lbsearch_main(4, STRV_MAKE("/usr/share/command-not-found/pts_lbsearch", "-p",
+		"/var/cache/command-not-found/db", v), pipefd[1]);
+	if (r < 0)
+		return -ENOENT;
+	f = fdopen(pipefd[0], "r");
+	if (!f)
+		return -errno;
+	s = fgets(out, sizeof(buf), f);
+	if (!s)
+		return -ENOENT;
+	if (strlen(buf) == 0)
+		return -ENOENT;
+
+	return 0;
 }
 
 int main(int argc, char *argv[]) {
@@ -123,22 +150,17 @@ int main(int argc, char *argv[]) {
 	if (r != 0) {
 		if (errno == ENOENT)
 			dprintf(2, "/var/cache/command-not-found/db not found."
-				"run update-command-not-found as root\n");
+				"run 'update-command-not-found' as root\n");
 		goto fail;
 	}
-	sz = asprintf(&v, "/usr/share/command-not-found/pts_lbsearch -p "\
-			"/var/cache/command-not-found/db "\
-			"%s\xff", command);
-	if (sz < 0)
-		goto fail;
-	f = popen(v, "r");
-	if (!f)
-		goto fail;
-	s = fgets((char *)&buf, sizeof(buf), f);
-	if (!s)
-		goto bail;
-	if (strlen(buf) == 0)
-		goto bail;
+
+	r = get_entry(buf, command);
+	if (r < 0) {
+		if (r == -ENOENT) {
+			goto bail;
+		} else
+			goto fail;
+	}
 	package = strchr(buf, '\xff');
 	if (!package)
 		goto bail;
@@ -166,9 +188,12 @@ int main(int argc, char *argv[]) {
 	bbuf[2] = '\0';
 
 	s = strv_find_prefix(components, (char *)&bbuf);
-	if (s)
-		dprintf(2, _("You will have to enable the component called '%s'\n"), s);
+	if (!s)
+		goto skip_component;
 
+	dprintf(2, _("You will have to enable the component called '%s'\n"), s);
+
+success
 	return EXIT_SUCCESS;
 fail:
 	fputs(strerror(errno), stderr);

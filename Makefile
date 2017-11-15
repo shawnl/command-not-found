@@ -1,13 +1,13 @@
 CC = cc
 CFLAGS = -Wall -g -O2
 
-default: command-not-found pts_lbsearch
+default: command-not-found pts_lbsearch.o
 
-command-not-found: pts_lbsearch
-	$(CC) command-not-found.c -o command-not-found $(CFLAGS)
+command-not-found: pts_lbsearch.o
+	$(CC) command-not-found.c -o command-not-found $(CFLAGS) pts_lbsearch.o
 
-pts_lbsearch:
-	$(CC) pts_lbsearch.c -o pts_lbsearch $(CFLAGS)
+pts_lbsearch.o:
+	$(CC) pts_lbsearch.c -c -o pts_lbsearch.o $(CFLAGS)
 
 clean:
-	-rm command-not-found pts_lbsearch
+	-rm command-not-found pts_lbsearch.o

@@ -80,6 +80,7 @@
 
 typedef char ybool;
 
+int arg_stdout_fileno = STDOUT_FILENO;
 #define YF_READ_BUF_SIZE 8192  /* Must be a power of 2. */
 
 /* --- Buffered, seekable file reader.
@@ -540,7 +541,7 @@ STATIC __attribute__((noreturn)) void usage_error(
 }
 
 STATIC void write_all_to_stdout(const char *buf, size_t size) {
-  size_t got = write(STDOUT_FILENO, buf, size);
+  size_t got = write(arg_stdout_fileno, buf, size);
   if (got == size) {
   } else if (got + 1U == 0U) {
    die2_strerror("error: write stdout", "");
@@ -559,7 +560,7 @@ STATIC void print_range(yfile *yf, off_t start, off_t end) {
   /* _WIN32 and _WIN64 cover __CYGWIN__, __MINGW32__, __MINGW64__ and
    * _MSC_VER > 1000, no need to check for more.
    */
-  setmode(STDOUT_FILENO, O_BINARY);
+  setmode(arg_stdout_fileno, O_BINARY);
 #endif
   while ((need = yfpeek(yf, end, &buf)) > 0) {
     write_all_to_stdout(buf, need);
@@ -571,7 +572,7 @@ STATIC void print_range(yfile *yf, off_t start, off_t end) {
   /* _WIN32 and _WIN64 cover __CYGWIN__, __MINGW32__, __MINGW64__ and
    * _MSC_VER > 1000, no need to check for more.
    */
-  setmode(STDOUT_FILENO, 0);
+  setmode(arg_stdout_fileno, 0);
 #endif
 }
 
@@ -655,7 +656,7 @@ typedef enum incomplete_t {
   IN_UNSET,  /* Not set yet. Most functions do not support it. */
 } incomplete_t;
 
-int main(int argc, char **argv) {
+int pts_lbsearch_main(int argc, char **argv, int fd) {
   yfile yff, *yf = &yff;
   const char *x;
   const char *y;
@@ -671,6 +672,9 @@ int main(int argc, char **argv) {
   off_t start, end;
   printing_t printing = PR_UNSET;
   incomplete_t incomplete = IN_UNSET;
+
+  if (fd >= 0)
+    arg_stdout_fileno = fd;
 
   /* Parse the command-line. */
   if (argc != 4 && argc != 5) usage_error(argv[0], "incorrect argument count");
@@ -691,36 +695,36 @@ int main(int argc, char **argv) {
   /* TODO(pts): Make the initial lo and hi offsets specifiable. */
   for (p = flags; (flag = *p); ++p) {
     if (flag == 'e') {
-      if (cm != CM_UNSET) usage_error(argv[0], "multiple boundary flags");
+      if (cm != CM_UNSET) return -EINVAL;
       cm = CM_LE;
     } else if (flag == 't') {
-      if (cm != CM_UNSET) usage_error(argv[0], "multiple boundary flags");
+      if (cm != CM_UNSET) return -EINVAL;
       cm = CM_LT;
     } else if (flag == 'p') {
-      if (cm != CM_UNSET) usage_error(argv[0], "multiple boundary flags");
+      if (cm != CM_UNSET) return -EINVAL;
       cm = CM_LP;
     } else if (flag == 'b') {
-      if (cmstart != CM_UNSET) usage_error(argv[0], "multiple start flags");
+      if (cmstart != CM_UNSET) return -EINVAL;
       cmstart = CM_LE;
     } else if (flag == 'a') {
-      if (cmstart != CM_UNSET) usage_error(argv[0], "multiple start flags");
+      if (cmstart != CM_UNSET) return -EINVAL;
       cmstart = CM_LT;
     } else if (flag == 'o') {
-      if (printing != PR_UNSET) usage_error(argv[0], "multiple printing flags");
+      if (printing != PR_UNSET) return -EINVAL;
       printing = PR_OFFSETS;
     } else if (flag == 'c') {
-      if (printing != PR_UNSET) usage_error(argv[0], "multiple printing flags");
+      if (printing != PR_UNSET) return -EINVAL;
       printing = PR_CONTENTS;
     } else if (flag == 'q') {
-      if (printing != PR_UNSET) usage_error(argv[0], "multiple printing flags");
+      if (printing != PR_UNSET) return -EINVAL;
       printing = PR_DETECT;
     } else if (flag == 'i') {
       if (incomplete != IN_UNSET) {
-        usage_error(argv[0], "multiple incomplete flags");
+        return -EINVAL;
       }
       incomplete = IN_IGNORE;
     } else {
-      usage_error(argv[0], "unsupported flag");
+      return -EINVAL;
     }
   }
   if (printing == PR_UNSET) printing = PR_CONTENTS;
@@ -761,7 +765,7 @@ int main(int argc, char **argv) {
     struct cache cache;
     const struct cache_entry *entry;
     /* Shortcut just to detect if x is present. */
-    if (cm == CM_LE) exit(3);  /* start:end range would always be empty. */
+    if (cm == CM_LE) return 3;  /* start:end range would always be empty. */
     cache_init(&cache);
     start = bisect_way(yf, &cache, 0, (off_t)-1, x, xsize, CM_LE);
     cache_init(&cache);  /* Can't reuse cache, cm has changed. */
@@ -770,7 +774,7 @@ int main(int argc, char **argv) {
      */
     entry = get_using_cache(yf, &cache, start, x, xsize, cm);
     yfclose(yf);
-    if (entry->cmp_result) exit(3);  /* exit(3) iff x not found in yf. */
+    if (entry->cmp_result) return 3;  /* exit(3) iff x not found in yf. */
   } else {
     if (!y) {
       y = x;
@@ -788,7 +792,7 @@ int main(int argc, char **argv) {
       write_all_to_stdout(ofsbuf, ofsp - ofsbuf);
     }
     yfclose(yf);
-    if (start >= end) exit(3);  /* No match found. */
+    if (start >= end) return 3;  /* No match found. */
   }
   return EXIT_SUCCESS;  /* 0. */
 }
