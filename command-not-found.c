@@ -60,12 +60,14 @@ bool is_root() {
 
 int main(int argc, char *argv[]) {
 	int r, r2;
-	FILE *f = NULL;
+	_cleanup_fclose_ FILE *f = NULL, *c = NULL;
 	_cleanup_free_ char *v = NULL;
 	size_t sz;
-	char buf[8192], *package, *command, *s;
+	char buf[8192], *package, *command, *s, *component;
 	char *prefixes[] = {"/usr/bin/", "/usr/sbin/", "/bin/", "/sbin/",
 			"/usr/local/bin/", "/usr/games/", NULL};
+	char *components[] = {"main", "contrib", "non-free", "universe",
+			"multiverse", "restricted", NULL};
 
 	if (argc != 2 && argc != 3) {
 		dprintf(2, "Wrong number of arguments.\n");
@@ -141,7 +143,11 @@ int main(int argc, char *argv[]) {
 	if (!package)
 		goto bail;
 	package++;
-	*strchrnul(package, '\n') = '\0';
+	component = strchr(package, '/');
+	if (!component)
+		goto bail;
+	*component = '\0';
+	component++;
 	dprintf(2, _("The program '%s' is currently not installed. "), command);
 	if (is_root()) {
 		dprintf(2, _("You can install it by typing:\n"));
@@ -153,6 +159,15 @@ int main(int argc, char *argv[]) {
 		dprintf(2, _("To run '%s' please ask your "
 			"administrator to install the package '%s'\n"),
 			command, package);
+
+	char bbuf[3];
+	bbuf[0] = component[0];
+	bbuf[1] = component[1];
+	bbuf[2] = '\0';
+
+	s = strv_find_prefix(components, (char *)&bbuf);
+	if (s)
+		dprintf(2, _("You will have to enable the component called '%s'\n"), s);
 
 	return EXIT_SUCCESS;
 fail:

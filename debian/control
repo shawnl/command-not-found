@@ -7,8 +7,7 @@ Standards-Version: 4.1.1.1
 
 Package: command-not-found-ng
 Architecture: any
-#also sh
-Depends: grep, sed, coreutils
+Depends: ruby (>= 2.3), ruby-re2
 Suggests: apt-file (>= 3.0~exp1~)
 Replaces: command-not-found
 Breaks: command-not-found

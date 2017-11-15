@@ -1,9 +1,24 @@
-#!/bin/sh
-# (C) 2017 Shawn Landden <slandden@gmail.com> GPL 2+
-ls /var/lib/apt/lists | grep Contents-`dpkg --print-architecture` | grep -v diff_Index | while read -r line; do
-	/usr/lib/apt/apt-helper cat-file /var/lib/apt/lists/$line | grep -e ^bin/ -e ^sbin/ -e ^usr/bin/ -e ^usr/sbin/ -e ^usr/games/;
-done | sed 's/^[^ \n\t]*\/\([^ \t\n]*\)[ \t]*[^ \t\n]*\/\([^ \t\n]*\)$/\1\xff\2/' | LC_ALL=C sort > /var/cache/command-not-found/db
-filesize=$(stat -c '%s' /var/cache/command-not-found/db)
-if [ $filesize = 0 ]; then
-       echo "Database empty"
-fi
+#!/usr/bin/ruby
+# (C) 2017 Shawn Landden, GPL-2+
+#RE2 makes this twice as fast
+require 're2'
+paths = RE2::Regexp.new('^(?:(?:bin\/)|(?:sbin\/)|(?:usr\/bin\/)|(?:usr\/sbin\/)|(?:usr\/games\/))')
+parse = RE2::Regexp.new('^[^ \t]*\/([^ \t]*)[ \t]*[^ \t]*\/([^ \t]*)$')
+db = []
+Dir::entries("/var/lib/apt/lists").
+	grep_v(/diff_Index$/).
+	grep(RE2::Regexp.new("Contents-#{`dpkg --print-architecture`.chomp}")).each { |repo|
+
+	component = repo.split('_')[-2]
+	io = IO.popen(["/usr/lib/apt/apt-helper", "cat-file", "/var/lib/apt/lists/#{repo}"])
+	io.grep(paths) { |line|
+		match = parse.match(line)
+		db << "#{match[1]}\xff#{match[2].chomp}/#{component.byteslice(0,2)}"
+	}
+}
+db.sort!
+out = open("/var/cache/command-not-found/db", "w+")
+db.each { |i|
+	out.write(i)
+	out.putc("\n")
+}
