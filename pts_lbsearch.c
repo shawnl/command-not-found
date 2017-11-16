@@ -550,32 +550,6 @@ STATIC void write_all_to_stdout(const char *buf, size_t size) {
   }
 }
 
-STATIC void print_range(yfile *yf, off_t start, off_t end) {
-  int need;
-  const char *buf;
-  if (start >= end) return;
-  yfseek_set(yf, start);
-  end -= start;
-#if defined(__MSDOS__) || defined(_WIN32) || defined(_WIN64)
-  /* _WIN32 and _WIN64 cover __CYGWIN__, __MINGW32__, __MINGW64__ and
-   * _MSC_VER > 1000, no need to check for more.
-   */
-  setmode(arg_stdout_fileno, O_BINARY);
-#endif
-  while ((need = yfpeek(yf, end, &buf)) > 0) {
-    write_all_to_stdout(buf, need);
-    yfseek_cur(yf, need);
-    end -= need;
-  }
-  /* \n is not printed at EOF if there isn't any. */
-#if defined(__MSDOS__) || defined(_WIN32) || defined(_WIN64)
-  /* _WIN32 and _WIN64 cover __CYGWIN__, __MINGW32__, __MINGW64__ and
-   * _MSC_VER > 1000, no need to check for more.
-   */
-  setmode(arg_stdout_fileno, 0);
-#endif
-}
-
 #if defined(__i386__) && __SIZEOF_INT__ == 4 && __SIZEOF_LONG_LONG__ == 8 && \
     defined(__GNUC__)
 /* A smaller implementation of division for format_unsigned, which doesn't
@@ -656,7 +630,7 @@ typedef enum incomplete_t {
   IN_UNSET,  /* Not set yet. Most functions do not support it. */
 } incomplete_t;
 
-int pts_lbsearch_main(int argc, char **argv, int fd) {
+int pts_lbsearch_main(int argc, char **argv, char *out, size_t out_len) {
   yfile yff, *yf = &yff;
   const char *x;
   const char *y;
@@ -673,12 +647,9 @@ int pts_lbsearch_main(int argc, char **argv, int fd) {
   printing_t printing = PR_UNSET;
   incomplete_t incomplete = IN_UNSET;
 
-  if (fd >= 0)
-    arg_stdout_fileno = fd;
-
   /* Parse the command-line. */
-  if (argc != 4 && argc != 5) usage_error(argv[0], "incorrect argument count");
-  if (argv[1][0] != '-') usage_error(argv[0], "missing flags");
+  if (argc != 4 && argc != 5) return -EINVAL;
+  if (argv[1][0] != '-') return -EINVAL;
   flags = argv[1] + 1;
   filename = argv[2];
   x = argv[3];
@@ -730,13 +701,13 @@ int pts_lbsearch_main(int argc, char **argv, int fd) {
   if (printing == PR_UNSET) printing = PR_CONTENTS;
   if (incomplete == IN_UNSET) incomplete = IN_USE;
   if (cmstart == CM_UNSET) cmstart = CM_LE;
-  if (cm == CM_UNSET) usage_error(argv[0], "missing boundary flag");
+  if (cm == CM_UNSET) return -EINVAL;
   if (cmstart == CM_LT && !(!y && cm == CM_LE && printing == PR_OFFSETS)) {
     /* TODO(pts): Make cmstart=CM_LT work in bisect_interval etc. */
-    usage_error(argv[0], "flag -a needs -eo and no <key-y>");
+    return -EINVAL;
   }
   if (!y && printing != PR_OFFSETS && cm == CM_LE) {
-    usage_error(argv[0], "single-key contents is always empty");
+    return -EINVAL;
   }
 
   yfopen(yf, filename, (off_t)-1);
@@ -782,7 +753,9 @@ int pts_lbsearch_main(int argc, char **argv, int fd) {
     }
     bisect_interval(yf, 0, (off_t)-1, cm, x, xsize, y, ysize, &start, &end);
     if (printing == PR_CONTENTS) {
-      print_range(yf, start, end);
+      lseek(yf->fd, start, SEEK_SET);
+      read(yf->fd, out, ((end - start) > out_len - 1) ? out_len : (end - start));
+      *(out + end - start) = '\0';
     } else if (printing == PR_OFFSETS) {
       ofsp = ofsbuf;
       ofsp = format_unsigned(ofsp, start);

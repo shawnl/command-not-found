@@ -1,5 +1,12 @@
 #!/usr/bin/ruby
 # (C) 2017 Shawn Landden, GPL-2+
+#Create the databases (or cache) for command-not-found
+#
+#This program creates the database in /var/cache/command-not-found/dn. It may
+#take some time, because the files it reads are big.
+#
+#Patches are accepted, as well as rewrites.
+#
 #RE2 makes this twice as fast
 require 're2'
 paths = RE2::Regexp.new('^(?:(?:bin\/)|(?:sbin\/)|(?:usr\/bin\/)|(?:usr\/sbin\/)|(?:usr\/games\/))')

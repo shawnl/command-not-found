@@ -1,5 +1,5 @@
 CC = cc
-CFLAGS = -Wall -g -O2
+CFLAGS = -Wall -g -O0
 
 default: command-not-found pts_lbsearch.o
 

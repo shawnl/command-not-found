@@ -35,6 +35,9 @@
 
 bool arg_ignore_installed = false;
 
+static const char *components[] = {"main", "contrib", "non-free", "universe",
+		"multiverse", "restricted", NULL};
+
 int can_sudo() {
 	struct group *adm, *sudo;
 	gid_t mygroups[1024];
@@ -59,42 +62,140 @@ bool is_root() {
 	return (geteuid() == 0);
 }
 
-int get_entry(char *out, char *command) {
-	static int pipefd[2] = {-1, -1}
-	if (pipefd[0] < 0 || pipefd[1] < 0) {
-		r = pipe(pipefd);
-		if (r < 0)
-			return -errno;
-	}
-	sz = asprintf(&v, "%s\xff", command);
-	if (sz < 0)
-		return -ENOMEM;
+int get_entry(char *out, size_t out_len, char *command_ff_terminated) {
+	int r;
+	_cleanup_fclose_ FILE *f = NULL;
+
 	r = pts_lbsearch_main(4, STRV_MAKE("/usr/share/command-not-found/pts_lbsearch", "-p",
-		"/var/cache/command-not-found/db", v), pipefd[1]);
+		"/var/cache/command-not-found/db", command_ff_terminated), out, out_len);
 	if (r < 0)
 		return -ENOENT;
-	f = fdopen(pipefd[0], "r");
-	if (!f)
-		return -errno;
-	s = fgets(out, sizeof(buf), f);
-	if (!s)
-		return -ENOENT;
-	if (strlen(buf) == 0)
+	if (strlen(out) == 0)
 		return -ENOENT;
 
 	return 0;
 }
 
+void spell_check_print_header(char *command) {
+	static bool printed_header = false;
+
+	if (printed_header == false) {
+		dprintf(2, "No command '%s' found, did you mean:\n", command);
+		printed_header = true;
+	}
+}
+
+/*def similar_words(word):
+    """ return a set with spelling1 distance alternative spellings
+
+        based on http://norvig.com/spell-correct.html"""
+    alphabet = 'abcdefghijklmnopqrstuvwxyz-_'
+    s = [(word[:i], word[i:]) for i in range(len(word) + 1)]
+    deletes    = [a + b[1:] for a, b in s if b]
+    transposes = [a + b[1] + b[0] + b[2:] for a, b in s if len(b)>1]
+    replaces   = [a + c + b[1:] for a, b in s for c in alphabet if b]
+    inserts    = [a + c + b     for a, b in s for c in alphabet]
+    return set(deletes + transposes + replaces + inserts)*/
+void spell_check(char *command) {
+	char alphabet[] = "abcdefghijklmnopqrstuvwxyz-_";
+	char buf[4096], *component, *package, *s;
+	char bufout[4096];
+
+	if (strlen(command) < 4 || strlen(command) >= sizeof(buf) - 2)
+		return;
+	/* deletes */
+	for (int i = 0; i < strlen(command); i++) {
+		memcpy(buf, command, i);
+		memcpy(buf + i, command + i + 1, strlen(command) - (i + 1));
+		buf[strlen(command) - 1] = '\xff';
+		buf[strlen(command)] = '\0';
+		if (get_entry(bufout, sizeof(bufout), buf) != 0)
+			continue;
+		spell_check_print_header(command);
+		package = strchrnul(bufout, '\xff');
+		*package = '\0'; package++;
+		component = strchrnul(package, '/');
+		*component = '\0'; component++;
+		*strchrnul(component, '\n') = '\0';
+		s = strv_find_prefix((char **)components, component);
+		if (!s)
+			continue;
+		dprintf(2, " Command '%s' from package '%s' (%s)\n", bufout, package, s);
+	}
+	/* transposes */
+	for (int i = 0; i < (strlen(command) - 1); i++) {
+		strcpy(buf, command);
+		buf[i] = command[i+1];
+		buf[i+1]=command[i];
+
+		buf[strlen(command)] = '\xff';
+		buf[strlen(command) + 1] = '\0';
+		if (get_entry(bufout, sizeof(bufout), buf) != 0)
+			continue;
+		spell_check_print_header(command);
+		package = strchrnul(bufout, '\xff');
+		*package = '\0'; package++;
+		component = strchrnul(package, '/');
+		*component = '\0'; component++;
+		*strchrnul(component, '\n') = '\0';
+		s = strv_find_prefix((char **)components, component);
+		if (!s)
+			continue;
+		dprintf(2, " Command '%s' from package '%s' (%s)\n", bufout, package, s);
+	}
+	/* replaces */
+	for (int i = 0; i < strlen(command); i++) {
+		for (int j = 0; j < strlen(alphabet); j++) {
+			memcpy(buf, command, i);
+			buf[i] = alphabet[j];
+			memcpy(buf + i + 1, command + i + 1, strlen(command) - i - 1);
+			buf[strlen(command)] = '\xff';
+			buf[strlen(command) + 1] = '\0';
+			if (get_entry(bufout, sizeof(bufout), buf) != 0)
+				continue;
+			spell_check_print_header(command);
+			package = strchrnul(bufout, '\xff');
+			*package = '\0'; package++;
+			component = strchrnul(package, '/');
+			*component = '\0'; component++;
+			*strchrnul(component, '\n') = '\0';
+			s = strv_find_prefix((char **)components, component);
+			if (!s)
+				continue;
+			dprintf(2, " Command '%s' from package '%s' (%s)\n", bufout, package, s);
+		}
+	}
+	/* inserts */
+	for (int i = 0; i < strlen(command); i++) {
+		for (int j = 0; j < strlen(alphabet); j++) {
+			memcpy(buf, command, i);
+			buf[i] = alphabet[j];
+			memcpy(buf + i + 1, command + i, strlen(command) - i);
+			buf[strlen(command) + 1] = '\xff';
+			buf[strlen(command) + 2] = '\0';
+			if (get_entry(bufout, sizeof(bufout), buf) != 0)
+				continue;
+			spell_check_print_header(command);
+			package = strchrnul(bufout, '\xff');
+			*package = '\0'; package++;
+			component = strchrnul(package, '/');
+			*component = '\0'; component++;
+			*strchrnul(component, '\n') = '\0';
+			s = strv_find_prefix((char **)components, component);
+			if (!s)
+				continue;
+			dprintf(2, " Command '%s' from package '%s' (%s)\n", bufout, package, s);
+		}
+	}
+}
+
 int main(int argc, char *argv[]) {
 	int r, r2;
-	_cleanup_fclose_ FILE *f = NULL, *c = NULL;
 	_cleanup_free_ char *v = NULL;
 	size_t sz;
-	char buf[8192], *package, *command, *s, *component;
+	char buf[8192], buf2[4096], *package, *command, *s, *component;
 	char *prefixes[] = {"/usr/bin/", "/usr/sbin/", "/bin/", "/sbin/",
 			"/usr/local/bin/", "/usr/games/", NULL};
-	char *components[] = {"main", "contrib", "non-free", "universe",
-			"multiverse", "restricted", NULL};
 
 	if (argc != 2 && argc != 3) {
 		dprintf(2, "Wrong number of arguments.\n");
@@ -154,9 +255,13 @@ int main(int argc, char *argv[]) {
 		goto fail;
 	}
 
-	r = get_entry(buf, command);
+	sz = snprintf(buf2, sizeof(buf2), "%s\xff", command);
+	if (sz <= 0)
+		goto fail;
+	r = get_entry(buf, sizeof(buf), buf2);
 	if (r < 0) {
 		if (r == -ENOENT) {
+			spell_check(command);
 			goto bail;
 		} else
 			goto fail;
@@ -182,18 +287,15 @@ int main(int argc, char *argv[]) {
 			"administrator to install the package '%s'\n"),
 			command, package);
 
-	char bbuf[3];
-	bbuf[0] = component[0];
-	bbuf[1] = component[1];
-	bbuf[2] = '\0';
+	*strchrnul(component, '\n') = '\0';
 
-	s = strv_find_prefix(components, (char *)&bbuf);
+	s = strv_find_prefix((char **)components, component);
 	if (!s)
-		goto skip_component;
+		goto success;
 
 	dprintf(2, _("You will have to enable the component called '%s'\n"), s);
 
-success
+success:
 	return EXIT_SUCCESS;
 fail:
 	fputs(strerror(errno), stderr);
