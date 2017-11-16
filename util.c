@@ -10,7 +10,7 @@
 
 int read_full_stream(FILE *f, char **contents, size_t *size) {
         size_t n, l;
-        _cleanup_free_ char *buf = NULL;
+        ___cleanup_free_ char *buf = NULL;
         struct stat st;
 
         assert(f);
@@ -78,7 +78,7 @@ int read_full_stream(FILE *f, char **contents, size_t *size) {
 }
 
 int read_full_file(const char *fn, char **contents, size_t *size) {
-        _cleanup_fclose_ FILE *f = NULL;
+        ___cleanup_fclose_ FILE *f = NULL;
 
         assert(fn);
         assert(contents);

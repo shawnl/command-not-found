@@ -245,7 +245,7 @@ static int parse_argv(int argc, char *argv[]) {
 
 int main(int argc, char *argv[]) {
 	int r, r2;
-	_cleanup_free_ char *v = NULL, *sources_list = NULL;
+	___cleanup_free_ char *v = NULL, *sources_list = NULL;
 	size_t sz;
 	char buf[8192], buf2[4096], *package, *s, *component;
 	char *prefixes[] = {"/usr/bin/", "/usr/sbin/", "/bin/", "/sbin/",
@@ -262,7 +262,7 @@ int main(int argc, char *argv[]) {
 
 
 	STRV_FOREACH(s, *prefixes) {
-		_cleanup_free_ char *w = NULL;
+		___cleanup_free_ char *w = NULL;
 		char *path;
 
 		r = asprintf(&w, "%s%s", s, arg_command);

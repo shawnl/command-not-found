@@ -4,7 +4,7 @@
 #include <assert.h>
 #include <string.h>
 
-#define _cleanup_(x) __attribute__((cleanup(x)))
+#define ___cleanup_(x) __attribute__((cleanup(x)))
 #define DEFINE_TRIVIAL_CLEANUP_FUNC(type, func)                                 \
         static inline void func##p(type *p) {                                   \
                 if (*p)                                                         \
@@ -14,8 +14,8 @@
 
 DEFINE_TRIVIAL_CLEANUP_FUNC(char*, free);
 DEFINE_TRIVIAL_CLEANUP_FUNC(FILE*, fclose);
-#define _cleanup_free_ _cleanup_(freep)
-#define _cleanup_fclose_ _cleanup_(fclosep)
+#define ___cleanup_free_ ___cleanup_(freep)
+#define ___cleanup_fclose_ ___cleanup_(fclosep)
 
 #define STRV_MAKE(...) ((char**) ((const char*[]) { __VA_ARGS__, NULL }))
 
