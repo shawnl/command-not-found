@@ -242,7 +242,7 @@ static int parse_argv(int argc, char *argv[]) {
 
 int main(int argc, char *argv[]) {
 	int r, r2;
-	_cleanup_free_ char *v = NULL;
+	_cleanup_free_ char *v = NULL, *sources_list = NULL;
 	size_t sz;
 	char buf[8192], buf2[4096], *package, *s, *component;
 	char *prefixes[] = {"/usr/bin/", "/usr/sbin/", "/bin/", "/sbin/",
@@ -339,8 +339,24 @@ int main(int argc, char *argv[]) {
 	if (!s)
 		goto success;
 
-	dprintf(2, _("You will have to enable the component called '%s'\n"), s);
+	// TODO This is hacky, and doesn't support DEB822-style or sources.list.d
+	// use libapt-pkg with a C++ to C wrapper <apt-pkg/sourcelist.h>
+	r = read_full_file("/etc/apt/sources.list", &sources_list, &sz);
+	if (r < 0)
+		goto fail;
+	s = strstr(sources_list, s);
+	if (!s)
+		goto component_print;
 
+	s += strcchr(s, '#\n');
+	if (!s)
+		goto component_print;
+	*s = '\0';
+
+	/* not commented out */
+	if (strrchr('#') < strrchr('\n'))
+component_print:
+		dprintf(2, _("You will have to enable the component called '%s'\n"), s);
 success:
 	return EXIT_SUCCESS;
 fail:

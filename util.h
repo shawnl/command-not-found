@@ -42,3 +42,6 @@ char *strv_find_prefix(char **l, const char *name) {
 
         return NULL;
 }
+
+int read_full_file(const char *fn, char **contents, size_t *size);
+int read_full_stream(FILE *f, char **contents, size_t *size);
