@@ -10,17 +10,20 @@
 #RE2 makes this twice as fast
 require 're2'
 paths = RE2::Regexp.new('^(?:(?:bin\/)|(?:sbin\/)|(?:usr\/bin\/)|(?:usr\/sbin\/)|(?:usr\/games\/))')
-parse = RE2::Regexp.new('^[^ \t]*\/([^ \t]*)[ \t]*[^ \t]*\/([^ \t]*)$')
+parse = RE2::Regexp.new('^[^ \t]*\/([^ \t]*)[ \t]*([^ \t]*)\/([^ \t]*)$')
 db = []
 Dir::entries("/var/lib/apt/lists").
 	grep_v(/diff_Index$/).
 	grep(RE2::Regexp.new("Contents-#{`dpkg --print-architecture`.chomp}")).each { |repo|
-
-	component = repo.split('_')[-2]
 	io = IO.popen(["/usr/lib/apt/apt-helper", "cat-file", "/var/lib/apt/lists/#{repo}"])
 	io.grep(paths) { |line|
 		match = parse.match(line)
-		db << "#{match[1]}\xff#{match[2].chomp}/#{component.byteslice(0,2)}"
+		if match[2].include?('/') {
+			component = match[2].split('/')[0]
+		} else {
+			component = "main"
+		}
+		db << "#{match[1]}\xff#{match[3].chomp}/#{component.byteslice(0,2)}"
 	}
 }
 db.sort!
