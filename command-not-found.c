@@ -242,7 +242,7 @@ static int parse_argv(int argc, char *argv[]) {
 
 int main(int argc, char *argv[]) {
 	int r, r2;
-	Cleanup_free_ char *v = NULL;
+	_cleanup_free_ char *v = NULL;
 	size_t sz;
 	char buf[8192], buf2[4096], *package, *s, *component;
 	char *prefixes[] = {"/usr/bin/", "/usr/sbin/", "/bin/", "/sbin/",
