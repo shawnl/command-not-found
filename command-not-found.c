@@ -98,6 +98,10 @@ void spell_check_print_header(char *command) {
     replaces   = [a + c + b[1:] for a, b in s for c in alphabet if b]
     inserts    = [a + c + b     for a, b in s for c in alphabet]
     return set(deletes + transposes + replaces + inserts)*/
+
+/* I don't think thse 4 loops can be combined, as they are subtely differn't.
+ * Maybe in ruby with a lambda, but not in C
+ */
 void spell_check(char *command) {
 	char alphabet[] = "abcdefghijklmnopqrstuvwxyz-_";
 	char buf[4096], *component, *package, *s;
