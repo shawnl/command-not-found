@@ -1,11 +1,11 @@
-Source: command-not-found-ng
+Source: command-not-found
 Section: admin
 Priority: optional
 Maintainer: Shawn Landden <slandden@gmail.com>
 Build-Depends: debhelper (>= 10)
 Standards-Version: 4.1.1.1
 
-Package: command-not-found-ng
+Package: command-not-found
 Architecture: any
 Depends: ruby (>= 2.3), ruby-re2, apt-file, apt
 Replaces: command-not-found
