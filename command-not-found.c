@@ -192,7 +192,7 @@ void spell_check(char *command) {
 
 int main(int argc, char *argv[]) {
 	int r, r2;
-	_cleanup_free_ char *v = NULL;
+	Cleanup_free_ char *v = NULL;
 	size_t sz;
 	char buf[8192], buf2[4096], *package, *command, *s, *component;
 	char *prefixes[] = {"/usr/bin/", "/usr/sbin/", "/bin/", "/sbin/",

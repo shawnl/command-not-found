@@ -3,7 +3,7 @@
 #include <stdio.h>
 #include <assert.h>
 
-#define _cleanup_(x) __attribute__((cleanup(x)))
+#define Cleanup_(x) __attribute__((cleanup(x)))
 #define DEFINE_TRIVIAL_CLEANUP_FUNC(type, func)                                 \
         static inline void func##p(type *p) {                                   \
                 if (*p)                                                         \
@@ -12,9 +12,7 @@
         struct __useless_struct_to_allow_trailing_semicolon__
 
 DEFINE_TRIVIAL_CLEANUP_FUNC(char*, free);
-DEFINE_TRIVIAL_CLEANUP_FUNC(FILE*, fclose);
-#define _cleanup_free_ _cleanup_(freep)
-#define _cleanup_fclose_ _cleanup_(fclosep)
+#define Cleanup_free_ Cleanup_(freep)
 
 #define STRV_MAKE(...) ((char**) ((const char*[]) { __VA_ARGS__, NULL }))
 
