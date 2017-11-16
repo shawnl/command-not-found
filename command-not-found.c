@@ -1,4 +1,3 @@
-
 /* command-not-found, finds programs
  * Copyright (C) 2017  Shawn Landden <slandden@gmail.com>
  *
@@ -66,8 +65,10 @@ int get_entry(char *out, size_t out_len, char *command_ff_terminated) {
 	int r;
 	_cleanup_fclose_ FILE *f = NULL;
 
-	r = pts_lbsearch_main(4, STRV_MAKE("/usr/share/command-not-found/pts_lbsearch", "-p",
-		"/var/cache/command-not-found/db", command_ff_terminated), out, out_len);
+	r = pts_lbsearch_main(4, STRV_MAKE(
+		"/usr/share/command-not-found/pts_lbsearch", "-p",
+		"/var/cache/command-not-found/db", command_ff_terminated),
+		out, out_len);
 	if (r < 0)
 		return -ENOENT;
 	if (strlen(out) == 0)
