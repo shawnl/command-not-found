@@ -18,11 +18,11 @@ Dir::entries("/var/lib/apt/lists").
 	io = IO.popen(["/usr/lib/apt/apt-helper", "cat-file", "/var/lib/apt/lists/#{repo}"])
 	io.grep(paths) { |line|
 		match = parse.match(line)
-		if match[2].include?('/') {
+		if match[2].include?('/')
 			component = match[2].split('/')[0]
-		} else {
+		else
 			component = "main"
-		}
+		end
 		db << "#{match[1]}\xff#{match[3].chomp}/#{component.byteslice(0,2)}"
 	}
 }
