@@ -240,6 +240,9 @@ static int parse_argv(int argc, char *argv[]) {
 	return 1;
 }
 
+#define PACKAGE "command-not-found"
+#define LOCALEDIR "/usr/share/locale"
+
 int main(int argc, char *argv[]) {
 	int r, r2;
 	_cleanup_free_ char *v = NULL, *sources_list = NULL;
@@ -247,6 +250,9 @@ int main(int argc, char *argv[]) {
 	char buf[8192], buf2[4096], *package, *s, *component;
 	char *prefixes[] = {"/usr/bin/", "/usr/sbin/", "/bin/", "/sbin/",
 			"/usr/local/bin/", "/usr/games/", NULL};
+
+	bindtextdomain(PACKAGE, LOCALEDIR);
+	textdomain(PACKAGE);
 
 	r = parse_argv(argc, argv);
 	if (r <= 0) {

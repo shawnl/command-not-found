@@ -7,7 +7,7 @@ Standards-Version: 4.1.1.1
 
 Package: command-not-found
 Architecture: any
-Depends: ruby (>= 2.3), ruby-re2, apt-file, apt
+Depends: ruby (>= 2.3), ruby-re2, apt-file, apt, ${shlibs:Depends}, ${misc:Depends}
 Replaces: command-not-found
 Conflicts: command-not-found
 Description: Suggest installation of packages in interactive bash sessions

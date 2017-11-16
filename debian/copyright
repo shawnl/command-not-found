@@ -10,7 +10,7 @@ License: GPL-2+
 
 Files: util.c util.c
 Copyright: (C) Lennart Poettering
-License: LGPL-2+
+License: LGPL-2.1+
 
 License: GPL-2+
  This program is free software; you can redistribute it

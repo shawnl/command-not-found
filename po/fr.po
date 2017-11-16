@@ -1,0 +1,71 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: \n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2017-11-15 21:27-0800\n"
+"PO-Revision-Date: 2017-11-15 22:33-0800\n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: Poedit 2.0.4\n"
+"Last-Translator: \n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+"Language: fr\n"
+
+#: command-not-found.c:275
+#, c-format
+msgid ""
+"The command could not be located because '%s' is not included in the PATH "
+"environment variable.\n"
+msgstr ""
+
+#: command-not-found.c:278
+msgid ""
+"This is most likely caused by the lack of administrative priviledges "
+"associated with your user account.\n"
+msgstr ""
+
+#: command-not-found.c:286
+#, c-format
+msgid "Command '%s' is available in '%s'\n"
+msgstr ""
+
+#: command-not-found.c:324
+#, c-format
+msgid "The program '%s' is currently not installed. "
+msgstr ""
+"Le programme '%s' n'est pas installé actuellement, vous pouvez "
+"l'installer en tapant."
+
+#: command-not-found.c:326 command-not-found.c:329
+msgid "You can install it by typing:\n"
+msgstr ""
+
+#: command-not-found.c:327
+#, c-format
+msgid "apt install %s\n"
+msgstr ""
+
+#: command-not-found.c:330
+#, c-format
+msgid "sudo apt install %s\n"
+msgstr ""
+
+#: command-not-found.c:332
+#, c-format
+msgid ""
+"To run '%s' please ask your administrator to install the package '%s'\n"
+msgstr ""
+"Pour lancer '%s', veuillez prendre contact avec votre administrateur pour "
+"installer le paquet '%s'\n"
+
+#: command-not-found.c:359
+#, c-format
+msgid "You will have to enable the component called '%s'\n"
+msgstr "Assurez-vous que vous avez le composant '%s' activé\n"

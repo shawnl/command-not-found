@@ -1,0 +1,55 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2017-11-15 21:27-0800\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=CHARSET\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: command-not-found.c:275
+#, c-format
+msgid ""
+"The command could not be located because '%s' is not included in the PATH "
+"environment variable.\n"
+msgstr ""
+
+#: command-not-found.c:278
+msgid ""
+"This is most likely caused by the lack of administrative priviledges "
+"associated with your user account.\n"
+msgstr ""
+
+#: command-not-found.c:286
+#, c-format
+msgid "Command '%s' is available in '%s'\n"
+msgstr ""
+
+#: command-not-found.c:324
+#, c-format
+msgid "The program '%s' is currently not installed. "
+msgstr ""
+
+#: command-not-found.c:326 command-not-found.c:329
+msgid "You can install it by typing:\n"
+msgstr ""
+
+#: command-not-found.c:332
+#, c-format
+msgid "To run '%s' please ask your administrator to install the package '%s'\n"
+msgstr ""
+
+#: command-not-found.c:359
+#, c-format
+msgid "You will have to enable the component called '%s'\n"
+msgstr ""
