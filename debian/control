@@ -7,13 +7,9 @@ Standards-Version: 4.1.1.1
 
 Package: command-not-found-ng
 Architecture: any
-# apt-file is really a recommend, but a VERY strong recommend
 Depends: ruby (>= 2.3), ruby-re2, apt-file, apt
 Replaces: command-not-found
-Breaks: command-not-found
+Conflicts: command-not-found
 Description: Suggest installation of packages in interactive bash sessions
  This package will install handler for command_not_found that looks up
  programs not currently installed but available from the repositories.
- .
- This package has a smaller database and uses significantly less memory
- than command-not-found, and does not depend on python.
