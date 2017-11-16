@@ -256,7 +256,7 @@ int main(int argc, char *argv[]) {
 
 
 	STRV_FOREACH(s, *prefixes) {
-		Cleanup_free_ char *w = NULL;
+		_cleanup_free_ char *w = NULL;
 		char *path;
 
 		r = asprintf(&w, "%s%s", s, arg_command);
@@ -348,13 +348,13 @@ int main(int argc, char *argv[]) {
 	if (!s)
 		goto component_print;
 
-	s += strcchr(s, '#\n');
+	s += strcspn(s, "#\n");
 	if (!s)
 		goto component_print;
 	*s = '\0';
 
 	/* not commented out */
-	if (strrchr('#') < strrchr('\n'))
+	if (strrchr(s, '#') < strrchr(s, '\n'))
 component_print:
 		dprintf(2, _("You will have to enable the component called '%s'\n"), s);
 success:

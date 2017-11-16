@@ -2,6 +2,7 @@
 
 #include <stdio.h>
 #include <assert.h>
+#include <string.h>
 
 #define _cleanup_(x) __attribute__((cleanup(x)))
 #define DEFINE_TRIVIAL_CLEANUP_FUNC(type, func)                                 \
@@ -31,7 +32,7 @@ static inline char *startswith(const char *s, const char *prefix) {
         return NULL;
 }
 
-char *strv_find_prefix(char **l, const char *name) {
+static char *strv_find_prefix(char **l, const char *name) {
         char **i;
 
         assert(name);

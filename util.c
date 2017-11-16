@@ -1,4 +1,12 @@
+#include <errno.h>
+#include <sys/stat.h>
+#include <stdio.h>
+#include <stdlib.h>
+
 #include "util.h"
+
+#define READ_FULL_BYTES_MAX (4U*1024U*1024U)
+#define LINE_MAX (48*1024)
 
 int read_full_stream(FILE *f, char **contents, size_t *size) {
         size_t n, l;
@@ -56,7 +64,7 @@ int read_full_stream(FILE *f, char **contents, size_t *size) {
                 if (n >= READ_FULL_BYTES_MAX)
                         return -E2BIG;
 
-                n = MIN(n * 2, READ_FULL_BYTES_MAX);
+                n = ((n * 2) > READ_FULL_BYTES_MAX) ? READ_FULL_BYTES_MAX : (n * 2);
         }
 
         buf[l] = 0;
