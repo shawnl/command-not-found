@@ -17,6 +17,7 @@
  */
 #define _GNU_SOURCE
 #include <errno.h>
+#include <getopt.h>
 #include <grp.h>
 #include <libintl.h>
 #include <sys/types.h>
@@ -33,6 +34,7 @@
 #include "pts_lbsearch.h"
 
 bool arg_ignore_installed = false;
+char *arg_command = NULL;
 
 static const char *components[] = {"main", "contrib", "non-free", "universe",
 		"multiverse", "restricted", NULL};
@@ -63,7 +65,6 @@ bool is_root() {
 
 int get_entry(char *out, size_t out_len, char *command_ff_terminated) {
 	int r;
-	_cleanup_fclose_ FILE *f = NULL;
 
 	r = pts_lbsearch_main(4, STRV_MAKE(
 		"/usr/share/command-not-found/pts_lbsearch", "-p",
@@ -190,31 +191,71 @@ void spell_check(char *command) {
 	}
 }
 
+static void help(void) {
+	printf("%s [OPTIONS...] COMMAND ...\n\n"
+		"Query commands not available.\n\n"
+		"  -h --help                Show this help message\n"
+		"     --ignore-installed Do not suggest programs available locally\n\n",
+		program_invocation_short_name);
+}
+
+static int parse_argv(int argc, char *argv[]) {
+
+	enum {
+		ARG_IGNORE_INSTALLED,
+	};
+
+	static const struct option options[] = {
+		{ "help",                no_argument,       NULL, 'h'                     },
+		{ "ignore_installed",    no_argument,       NULL, ARG_IGNORE_INSTALLED    },
+		{}
+	};
+
+	int c;
+
+	assert(argc >= 0);
+	assert(argv);
+
+	while ((c = getopt_long(argc, argv, "hH:M:", options, NULL)) >= 0)
+
+		switch (c) {
+
+		case 'h':
+			help();
+			return 0;
+
+		case ARG_IGNORE_INSTALLED:
+			arg_ignore_installed = true;
+			break;
+
+		default:
+			assert(false);
+		}
+
+	arg_command = argv[argc - 1];
+	return 1;
+}
+
 int main(int argc, char *argv[]) {
 	int r, r2;
 	Cleanup_free_ char *v = NULL;
 	size_t sz;
-	char buf[8192], buf2[4096], *package, *command, *s, *component;
+	char buf[8192], buf2[4096], *package, *s, *component;
 	char *prefixes[] = {"/usr/bin/", "/usr/sbin/", "/bin/", "/sbin/",
 			"/usr/local/bin/", "/usr/games/", NULL};
 
-	if (argc != 2 && argc != 3) {
-		dprintf(2, "Wrong number of arguments.\n");
-		return EXIT_FAILURE;
+	r = parse_argv(argc, argv);
+	if (r <= 0) {
+		help();
+		return 1;
 	}
 
-	if (argc == 3 && strncmp(argv[1], "--", strlen("--")) == 0) {
-		if (strcmp(argv[1], "--ignore-installed") == 0)
-			arg_ignore_installed = true;
-		command = argv[2];
-	} else
-		command = argv[1];
 
 	STRV_FOREACH(s, *prefixes) {
-		_cleanup_free_ char *w = NULL;
+		Cleanup_free_ char *w = NULL;
 		char *path;
 
-		r = asprintf(&w, "%s%s", s, command);
+		r = asprintf(&w, "%s%s", s, arg_command);
 		if (r < 0)
 			goto fail;
 		r = access(w, X_OK);
@@ -238,7 +279,7 @@ int main(int argc, char *argv[]) {
 		if (arg_ignore_installed)
 			break;
 
-		dprintf(2, _("Command '%s' is available in '%s'\n"), command,
+		dprintf(2, _("Command '%s' is available in '%s'\n"), arg_command,
 			w);
 		return EXIT_SUCCESS;
 	}
@@ -256,13 +297,13 @@ int main(int argc, char *argv[]) {
 		goto fail;
 	}
 
-	sz = snprintf(buf2, sizeof(buf2), "%s\xff", command);
+	sz = snprintf(buf2, sizeof(buf2), "%s\xff", arg_command);
 	if (sz <= 0)
 		goto fail;
 	r = get_entry(buf, sizeof(buf), buf2);
 	if (r < 0) {
 		if (r == -ENOENT) {
-			spell_check(command);
+			spell_check(arg_command);
 			goto bail;
 		} else
 			goto fail;
@@ -276,7 +317,7 @@ int main(int argc, char *argv[]) {
 		goto bail;
 	*component = '\0';
 	component++;
-	dprintf(2, _("The program '%s' is currently not installed. "), command);
+	dprintf(2, _("The program '%s' is currently not installed. "), arg_command);
 	if (is_root()) {
 		dprintf(2, _("You can install it by typing:\n"));
 		dprintf(2, _("apt install %s\n"), package);
@@ -286,7 +327,7 @@ int main(int argc, char *argv[]) {
 	} else
 		dprintf(2, _("To run '%s' please ask your "
 			"administrator to install the package '%s'\n"),
-			command, package);
+			arg_command, package);
 
 	*strchrnul(component, '\n') = '\0';
 
@@ -303,7 +344,7 @@ fail:
 	fputc('\n', stderr);
 	return EXIT_FAILURE;
 bail:
-	dprintf(2, "%s: command not found\n", command);
+	dprintf(2, "%s: command not found\n", arg_command);
 	return EXIT_SUCCESS;
 }
 
