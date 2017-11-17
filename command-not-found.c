@@ -199,7 +199,7 @@ static void help(void) {
 	printf("%s [OPTIONS...] COMMAND ...\n\n"
 		"Query commands not available.\n\n"
 		"  -h --help                Show this help message\n"
-		"     --ignore-installed Do not suggest programs available locally\n\n",
+		"     --ignore-installed    Do not suggest programs available locally\n\n",
 		program_invocation_short_name);
 }
 
@@ -211,7 +211,7 @@ static int parse_argv(int argc, char *argv[]) {
 
 	static const struct option options[] = {
 		{ "help",                no_argument,       NULL, 'h'                     },
-		{ "ignore_installed",    no_argument,       NULL, ARG_IGNORE_INSTALLED    },
+		{ "ignore-installed",    no_argument,       NULL, ARG_IGNORE_INSTALLED    },
 		{}
 	};
 
@@ -226,14 +226,15 @@ static int parse_argv(int argc, char *argv[]) {
 
 		case 'h':
 			help();
-			return 0;
+			exit(EXIT_SUCCESS);
 
 		case ARG_IGNORE_INSTALLED:
 			arg_ignore_installed = true;
 			break;
 
 		default:
-			assert(false);
+			help();
+			exit(EXIT_FAILURE);
 		}
 
 	arg_command = argv[argc - 1];
@@ -256,7 +257,6 @@ int main(int argc, char *argv[]) {
 
 	r = parse_argv(argc, argv);
 	if (r <= 0) {
-		help();
 		return 1;
 	}
 
