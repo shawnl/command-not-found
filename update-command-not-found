@@ -14,7 +14,6 @@ paths = RE2::Regexp.new('^(?:(?:bin\/)|(?:sbin\/)|(?:usr\/bin\/)|(?:usr\/sbin\/)
 parse = RE2::Regexp.new('^[^ \t]*\/([^ \t]*)[ \t]*([^ \t]*)\/([^ \t]*)$')
 db = []
 `apt-get indextargets`.split("\n\n").grep(RE2("ShortDesc: Contents")).
-grep(RE2("Architecture: #{`dpkg --print-architecture`.chomp}")).
 map{|i| /Filename: ([^\n]*)\n/.match(i)[1]}.each { |repo|
 	io = IO.popen(["/usr/lib/apt/apt-helper", "cat-file", repo])
 	io.grep(paths) { |line|
@@ -28,6 +27,7 @@ map{|i| /Filename: ([^\n]*)\n/.match(i)[1]}.each { |repo|
 	}
 }
 db.sort!
+db.uniq!
 out = open("/var/cache/command-not-found/db", "w+")
 db.each { |i|
 	out.write(i)
