@@ -345,8 +345,8 @@ int main(int argc, char *argv[]) {
 	if (!s)
 		goto success;
 
-	// TODO This is hacky, and doesn't support DEB822-style or sources.list.d
-	// use libapt-pkg with a C++ to C wrapper <apt-pkg/sourcelist.h>
+	// TODO investigate using 'apt-get indextargets' or <apt-pkg/sourcelist.h>
+	// The advantage of this way is that it is much faster
 	r = read_full_file("/etc/apt/sources.list", &sources_list, &sz);
 	if (r < 0)
 		goto fail;
