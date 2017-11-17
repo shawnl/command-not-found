@@ -9,10 +9,15 @@
 #
 #RE2 makes this twice as fast
 require 're2'
+require 'kyotocabinet'
+include KyotoCabinet
 
 paths = RE2::Regexp.new('^(?:(?:bin\/)|(?:sbin\/)|(?:usr\/bin\/)|(?:usr\/sbin\/)|(?:usr\/games\/))')
 parse = RE2::Regexp.new('^[^ \t]*\/([^ \t]*)[ \t]*([^ \t]*)\/([^ \t]*)$')
-db = []
+kc = DB::new()
+unless kc.open('/var/cache/command-not-found/db.kct#logkinds=debug#log=+', DB::OWRITER | DB::OCREATE)
+	STDERR.printf("open error: %s\n", db.error)
+end
 `apt-get indextargets`.split("\n\n").grep(RE2("ShortDesc: Contents")).
 map{|i| /Filename: ([^\n]*)\n/.match(i)[1]}.each { |repo|
 	io = IO.popen(["/usr/lib/apt/apt-helper", "cat-file", repo])
@@ -23,13 +28,7 @@ map{|i| /Filename: ([^\n]*)\n/.match(i)[1]}.each { |repo|
 		else
 			component = "main"
 		end
-		db << "#{match[1]}\xff#{match[3].chomp}/#{component.byteslice(0,2)}"
+		kc.set("#{match[1]}", "#{match[3].chomp}/#{component.byteslice(0,2)}")
 	}
 }
-db.sort!
-db.uniq!
-out = open("/var/cache/command-not-found/db", "w+")
-db.each { |i|
-	out.write(i)
-	out.putc("\n")
-}
+kc.close

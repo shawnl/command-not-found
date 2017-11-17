@@ -30,11 +30,15 @@
 #include <stdbool.h>
 #define _ gettext
 
+#include <kclangc.h>
+
 #include "command-not-found.h"
 #include "pts_lbsearch.h"
 
 bool arg_ignore_installed = false;
 char *arg_command = NULL;
+
+KCDB *db = NULL;
 
 static const char *components[] = {"main", "contrib", "non-free", "universe",
 		"multiverse", "restricted", NULL};
@@ -246,14 +250,17 @@ static int parse_argv(int argc, char *argv[]) {
 
 int main(int argc, char *argv[]) {
 	int r, r2;
-	___cleanup_free_ char *v = NULL, *sources_list = NULL;
+	___cleanup_(freep) char *v = NULL, *sources_list = NULL;
 	size_t sz;
 	char buf[8192], buf2[4096], *package, *s, *component;
 	char *prefixes[] = {"/usr/bin/", "/usr/sbin/", "/bin/", "/sbin/",
 			"/usr/local/bin/", "/usr/games/", NULL};
+	___cleanup_(kcfreep) char *z = NULL;
 
 	bindtextdomain(PACKAGE, LOCALEDIR);
 	textdomain(PACKAGE);
+
+	db = kcdbnew();
 
 	r = parse_argv(argc, argv);
 	if (r <= 0) {
@@ -262,7 +269,7 @@ int main(int argc, char *argv[]) {
 
 
 	STRV_FOREACH(s, *prefixes) {
-		___cleanup_free_ char *w = NULL;
+		___cleanup_(freep) char *w = NULL;
 		char *path;
 
 		r = asprintf(&w, "%s%s", s, arg_command);
@@ -294,31 +301,16 @@ int main(int argc, char *argv[]) {
 		return EXIT_SUCCESS;
 	}
 
-	r = access("/usr/bin/apt", X_OK);
-	r2= access("/usr/bin/aptitude", X_OK);
-	if (r != 0 && r2 != 0)
-		goto bail;
-
-	r = access("/var/cache/command-not-found/db", R_OK);
-	if (r != 0) {
-		if (errno == ENOENT)
-			dprintf(2, "/var/cache/command-not-found/db not found."
-				"run 'update-command-not-found' as root\n");
-		goto fail;
-	}
-
-	sz = snprintf(buf2, sizeof(buf2), "%s\xff", arg_command);
-	if (sz <= 0)
-		goto fail;
-	r = get_entry(buf, sizeof(buf), buf2);
-	if (r < 0) {
-		if (r == -ENOENT) {
-			spell_check(arg_command);
-			goto bail;
-		} else
+	if (!kcdbopen(db,
+		"/var/cache/command-not-found/db.kct#logkinds=debug#log=+",
+		KCOREADER))
 			goto fail;
+	z = kcdbget(db, arg_command, strlen(arg_command), &sz);
+	if (!z) {
+		/*spell_check(arg_command);*/
+		goto bail;
 	}
-	package = strchr(buf, '\xff');
+	package = z;
 	if (!package)
 		goto bail;
 	package++;

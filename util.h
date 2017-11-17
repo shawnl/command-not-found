@@ -14,8 +14,9 @@
 
 DEFINE_TRIVIAL_CLEANUP_FUNC(char*, free);
 DEFINE_TRIVIAL_CLEANUP_FUNC(FILE*, fclose);
-#define ___cleanup_free_ ___cleanup_(freep)
-#define ___cleanup_fclose_ ___cleanup_(fclosep)
+
+DEFINE_TRIVIAL_CLEANUP_FUNC(char*, kcfree);
+
 
 #define STRV_MAKE(...) ((char**) ((const char*[]) { __VA_ARGS__, NULL }))
 
