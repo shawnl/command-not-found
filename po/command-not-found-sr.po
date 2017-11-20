@@ -1,0 +1,157 @@
+# translation of command-not-found.po to
+# Marko Uskokovic <uskokovic@etf.bg.ac.yu>, 2007, 2008.
+# Serbian linux distribution cp6Linux
+# Copyright  2007 Marko Uskokovic
+msgid ""
+msgstr ""
+"Project-Id-Version: command-not-found\n"
+"Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
+"POT-Creation-Date: 2017-09-25 14:27+0000\n"
+"PO-Revision-Date: 2011-07-07 01:47+0000\n"
+"Last-Translator: Мирослав Николић <miroslavnikolic@rocketmail.com>\n"
+"Language-Team: <sr@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Launchpad-Export-Date: 2017-11-17 05:52+0000\n"
+"X-Generator: Launchpad \n"
+
+#: ../CommandNotFound/CommandNotFound.py:148
+#, python-format
+msgid "No command '%s' found, but there are %s similar ones"
+msgstr "Нисам нашао наредбу „%s“, али постоји сличних %s"
+
+#: ../CommandNotFound/CommandNotFound.py:150
+#, python-format
+msgid "No command '%s' found, did you mean:"
+msgstr "Нисам нашао наредбу „%s“, да ли сте мислили:"
+
+#: ../CommandNotFound/CommandNotFound.py:152
+#, python-format
+msgid " Command '%s' from package '%s' (%s)"
+msgstr " Наредба „%s“ из пакета „%s“ (%s)"
+
+#: ../CommandNotFound/CommandNotFound.py:210
+msgid "Do you want to install it? "
+msgstr "Да ли желите да је инсталирате? "
+
+#: ../CommandNotFound/CommandNotFound.py:218
+msgid "y"
+msgstr "y"
+
+#: ../CommandNotFound/CommandNotFound.py:245
+#, python-format
+msgid "Command '%s' is available in '%s'"
+msgstr "Наредба „%s“ је доступна у „%s“"
+
+#: ../CommandNotFound/CommandNotFound.py:247
+#, python-format
+msgid "Command '%s' is available in the following places"
+msgstr "Наредба „%s“ је доступна на следећим местима"
+
+#: ../CommandNotFound/CommandNotFound.py:252
+#, python-format
+msgid ""
+"The command could not be located because '%s' is not included in the PATH "
+"environment variable."
+msgstr ""
+"Наредба не може бити лоцирана јер „%s“ није укључено у ПУТАЊИ променљиве "
+"окружења."
+
+#: ../CommandNotFound/CommandNotFound.py:254
+msgid ""
+"This is most likely caused by the lack of administrative privileges "
+"associated with your user account."
+msgstr ""
+"Ово је највероватније узроковано недостатком администраторских овлашћења "
+"придружених вашем корисничком налогу."
+
+#: ../CommandNotFound/CommandNotFound.py:269
+#, python-format
+msgid "The program '%s' is currently not installed. "
+msgstr "Програм „%s“ тренутно није инсталиран. "
+
+#: ../CommandNotFound/CommandNotFound.py:271
+#: ../CommandNotFound/CommandNotFound.py:275
+msgid "You can install it by typing:"
+msgstr "Можете да га инсталирате уписивањем:"
+
+#: ../CommandNotFound/CommandNotFound.py:279
+#, python-format
+msgid ""
+"To run '%s' please ask your administrator to install the package "
+"'%s'"
+msgstr ""
+"Да покренете „%s“ затражите од вашег администратора да инсталира "
+"пакет „%s“"
+
+#: ../CommandNotFound/CommandNotFound.py:281
+#, python-format
+msgid "You will have to enable the component called '%s'"
+msgstr "Морате да омогућите компоненту под називом „%s“"
+
+#: ../CommandNotFound/CommandNotFound.py:284
+#, python-format
+msgid "The program '%s' can be found in the following packages:"
+msgstr "Програм „%s“ се може наћи у следећим пакетима:"
+
+#: ../CommandNotFound/CommandNotFound.py:289
+#, python-format
+msgid "You will have to enable component called '%s'"
+msgstr "Морате да омогућите компоненту под називом „%s“"
+
+#: ../CommandNotFound/CommandNotFound.py:291
+#: ../CommandNotFound/CommandNotFound.py:293
+#, python-format
+msgid "Try: %s <selected package>"
+msgstr "Пробајте: %s <изабран пакет>"
+
+#: ../CommandNotFound/CommandNotFound.py:295
+msgid "Ask your administrator to install one of them"
+msgstr "Tражите од администратора да инсталира један од њих"
+
+#: ../command-not-found:77
+#, c-format
+msgid "%prog [options] <command-name>"
+msgstr "%prog [опције] <назив_наредбе>"
+
+#: ../command-not-found:80
+msgid "use this path to locate data fields"
+msgstr "користи следећу путању да пронађе поља података"
+
+#: ../command-not-found:83
+msgid "ignore local binaries and display the available packages"
+msgstr "занемарује локалне извршне и приказује доступне пакете"
+
+#: ../command-not-found:86
+msgid "don't print '<command-name>: command not found'"
+msgstr "не исписује „<назив-наредбе>: не постоји таква наредба“"
+
+#: ../command-not-found:91
+#, c-format
+msgid "%s: command not found"
+msgstr "%s: не постоји таква наредба"
+
+#: ../CommandNotFound/util.py:26
+msgid "Sorry, command-not-found has crashed! Please file a bug report at:"
+msgstr ""
+"Извините, програм „команда-није-нађена“ се урушио! Попуните извештај о "
+"грешци на:"
+
+#: ../CommandNotFound/util.py:28
+msgid "Please include the following information with the report:"
+msgstr "Унесите и следећу информацију у извештај:"
+
+#: ../CommandNotFound/util.py:30
+#, python-format
+msgid "command-not-found version: %s"
+msgstr "„команда-није-нађена“ — издање: %s"
+
+#: ../CommandNotFound/util.py:31
+#, python-format
+msgid "Python version: %d.%d.%d %s %d"
+msgstr "Издање Питона: %d.%d.%d %s %d"
+
+#: ../CommandNotFound/util.py:37
+msgid "Exception information:"
+msgstr "Подаци о изузетку:"

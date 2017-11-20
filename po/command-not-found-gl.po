@@ -1,0 +1,156 @@
+# Galician translation for command-not-found
+# Copyright  2007 Rosetta Contributors and Canonical Ltd 2007
+# This file is distributed under the same license as the command-not-found package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2007.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: command-not-found\n"
+"Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
+"POT-Creation-Date: 2017-09-25 14:27+0000\n"
+"PO-Revision-Date: 2012-08-31 22:43+0000\n"
+"Last-Translator: Fran Diéguez <Unknown>\n"
+"Language-Team: Galician <gl@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Launchpad-Export-Date: 2017-11-17 05:52+0000\n"
+"X-Generator: Launchpad \n"
+
+#: ../CommandNotFound/CommandNotFound.py:148
+#, python-format
+msgid "No command '%s' found, but there are %s similar ones"
+msgstr "Non foi posíbel encontrar a orde «%s», pero hai algunha similar %s"
+
+#: ../CommandNotFound/CommandNotFound.py:150
+#, python-format
+msgid "No command '%s' found, did you mean:"
+msgstr "Non foi posíbel encontrar a orde «%s», quizáis quixo dicir:"
+
+#: ../CommandNotFound/CommandNotFound.py:152
+#, python-format
+msgid " Command '%s' from package '%s' (%s)"
+msgstr " Orde «%s» do paquete «%s» (%s)"
+
+#: ../CommandNotFound/CommandNotFound.py:210
+msgid "Do you want to install it? "
+msgstr "Desexa instalalo? "
+
+#: ../CommandNotFound/CommandNotFound.py:218
+msgid "y"
+msgstr "s"
+
+#: ../CommandNotFound/CommandNotFound.py:245
+#, python-format
+msgid "Command '%s' is available in '%s'"
+msgstr "A orde «%s» está dispoñíbel en '%s'"
+
+#: ../CommandNotFound/CommandNotFound.py:247
+#, python-format
+msgid "Command '%s' is available in the following places"
+msgstr "A orde «%s» está dispoñíbel nos seguinte paquetes"
+
+#: ../CommandNotFound/CommandNotFound.py:252
+#, python-format
+msgid ""
+"The command could not be located because '%s' is not included in the PATH "
+"environment variable."
+msgstr ""
+"Non foi posíbel encontrar a orde porque «%s» non está incluido na variable "
+"de contorno PATH."
+
+#: ../CommandNotFound/CommandNotFound.py:254
+msgid ""
+"This is most likely caused by the lack of administrative privileges "
+"associated with your user account."
+msgstr ""
+"Isto é debido á falta de privilexios de administración asociados á súa conta "
+"de usuario."
+
+#: ../CommandNotFound/CommandNotFound.py:269
+#, python-format
+msgid "The program '%s' is currently not installed. "
+msgstr "O programa \"%s\" non está instalado actualmente. "
+
+#: ../CommandNotFound/CommandNotFound.py:271
+#: ../CommandNotFound/CommandNotFound.py:275
+msgid "You can install it by typing:"
+msgstr "Pódeo instalar escribindo:"
+
+#: ../CommandNotFound/CommandNotFound.py:279
+#, python-format
+msgid ""
+"To run '%s' please ask your administrator to install the package "
+"'%s'"
+msgstr ""
+"Para executar '%s' pídalle ao seu administrador que instale o "
+"paquete '%s'"
+
+#: ../CommandNotFound/CommandNotFound.py:281
+#, python-format
+msgid "You will have to enable the component called '%s'"
+msgstr "Terá que activar o compoñente chamado «%s»"
+
+#: ../CommandNotFound/CommandNotFound.py:284
+#, python-format
+msgid "The program '%s' can be found in the following packages:"
+msgstr "O programa \"%s\" pódese atopar nos seguintes paquetes:"
+
+#: ../CommandNotFound/CommandNotFound.py:289
+#, python-format
+msgid "You will have to enable component called '%s'"
+msgstr "Terá que activar o compoñente chamado «%s»"
+
+#: ../CommandNotFound/CommandNotFound.py:291
+#: ../CommandNotFound/CommandNotFound.py:293
+#, python-format
+msgid "Try: %s <selected package>"
+msgstr "Tente: %s <paquete seleccionado>"
+
+#: ../CommandNotFound/CommandNotFound.py:295
+msgid "Ask your administrator to install one of them"
+msgstr "Pídalle ao seu administrador que instale un deles"
+
+#: ../command-not-found:77
+#, c-format
+msgid "%prog [options] <command-name>"
+msgstr "%prog [opcións] <nome-da-orde>"
+
+#: ../command-not-found:80
+msgid "use this path to locate data fields"
+msgstr "use esta ruta para localizar campos de datos"
+
+#: ../command-not-found:83
+msgid "ignore local binaries and display the available packages"
+msgstr "ignorar os binarios locais e mostrar os paquetes dispoñíbeis"
+
+#: ../command-not-found:86
+msgid "don't print '<command-name>: command not found'"
+msgstr "non imprimir «<nome-da-orde>: orde non atopada»"
+
+#: ../command-not-found:91
+#, c-format
+msgid "%s: command not found"
+msgstr "%s: orde non encontrada"
+
+#: ../CommandNotFound/util.py:26
+msgid "Sorry, command-not-found has crashed! Please file a bug report at:"
+msgstr "A orde command-not-found pechou inesperadamente! Informe do erro a:"
+
+#: ../CommandNotFound/util.py:28
+msgid "Please include the following information with the report:"
+msgstr "Inclúa a seguinte información no informe:"
+
+#: ../CommandNotFound/util.py:30
+#, python-format
+msgid "command-not-found version: %s"
+msgstr "Versión de command-not-found: %s"
+
+#: ../CommandNotFound/util.py:31
+#, python-format
+msgid "Python version: %d.%d.%d %s %d"
+msgstr "Versión de Python: %d.%d.%d %s %d"
+
+#: ../CommandNotFound/util.py:37
+msgid "Exception information:"
+msgstr "Información da excepción:"

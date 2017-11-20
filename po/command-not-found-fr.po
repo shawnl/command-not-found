@@ -1,0 +1,156 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: command-not-found\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2017-09-25 14:27+0000\n"
+"PO-Revision-Date: 2017-02-18 11:57+0000\n"
+"Last-Translator: Bruno Bord <Unknown>\n"
+"Language-Team: Bruno Bord <bruno@jehaisleprintemps.net>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Launchpad-Export-Date: 2017-11-17 05:52+0000\n"
+"X-Generator: Launchpad \n"
+"X-Poedit-Country: FRANCE\n"
+"X-Poedit-Language: French\n"
+"X-Poedit-SourceCharset: utf-8\n"
+
+#: ../CommandNotFound/CommandNotFound.py:148
+#, python-format
+msgid "No command '%s' found, but there are %s similar ones"
+msgstr "La commande « %s » est introuvable, mais il y en a %s similaires"
+
+#: ../CommandNotFound/CommandNotFound.py:150
+#, python-format
+msgid "No command '%s' found, did you mean:"
+msgstr "La commande « %s » est introuvable, vouliez-vous dire :"
+
+#: ../CommandNotFound/CommandNotFound.py:152
+#, python-format
+msgid " Command '%s' from package '%s' (%s)"
+msgstr " La commande « %s » du paquet « %s » (%s)"
+
+#: ../CommandNotFound/CommandNotFound.py:210
+msgid "Do you want to install it? "
+msgstr "Voulez-vous l'installer ? "
+
+#: ../CommandNotFound/CommandNotFound.py:218
+msgid "y"
+msgstr "o"
+
+#: ../CommandNotFound/CommandNotFound.py:245
+#, python-format
+msgid "Command '%s' is available in '%s'"
+msgstr "La commande « %s » est disponible dans « %s »"
+
+#: ../CommandNotFound/CommandNotFound.py:247
+#, python-format
+msgid "Command '%s' is available in the following places"
+msgstr "La commande « %s » est disponible aux emplacements suivants"
+
+#: ../CommandNotFound/CommandNotFound.py:252
+#, python-format
+msgid ""
+"The command could not be located because '%s' is not included in the PATH "
+"environment variable."
+msgstr ""
+"La commande n'a pas pu être trouvée car « %s » n'est pas incluse dans la "
+"variable d'environnement PATH."
+
+#: ../CommandNotFound/CommandNotFound.py:254
+msgid ""
+"This is most likely caused by the lack of administrative privileges "
+"associated with your user account."
+msgstr ""
+"Ceci est probablement dû au manque de privilèges d'administration de votre "
+"compte."
+
+#: ../CommandNotFound/CommandNotFound.py:269
+#, python-format
+msgid "The program '%s' is currently not installed. "
+msgstr "Le programme « %s » n'est pas encore installé. "
+
+#: ../CommandNotFound/CommandNotFound.py:271
+#: ../CommandNotFound/CommandNotFound.py:275
+msgid "You can install it by typing:"
+msgstr "Vous pouvez l'installer en tapant :"
+
+#: ../CommandNotFound/CommandNotFound.py:279
+#, python-format
+msgid ""
+"To run '%s' please ask your administrator to install the package "
+"'%s'"
+msgstr ""
+"Pour lancer '%s', veuillez prendre contact avec votre "
+"administrateur pour installer le paquet '%s'"
+
+#: ../CommandNotFound/CommandNotFound.py:281
+#, python-format
+msgid "You will have to enable the component called '%s'"
+msgstr "Vous devrez activer le composant appelé « %s »"
+
+#: ../CommandNotFound/CommandNotFound.py:284
+#, python-format
+msgid "The program '%s' can be found in the following packages:"
+msgstr "Le programme '%s' peut être trouvé dans les paquets suivants :"
+
+#: ../CommandNotFound/CommandNotFound.py:289
+#, python-format
+msgid "You will have to enable component called '%s'"
+msgstr "Vous devrez activer le composant appelé « %s »"
+
+#: ../CommandNotFound/CommandNotFound.py:291
+#: ../CommandNotFound/CommandNotFound.py:293
+#, python-format
+msgid "Try: %s <selected package>"
+msgstr "Essayez : %s <paquet sélectionné>"
+
+#: ../CommandNotFound/CommandNotFound.py:295
+msgid "Ask your administrator to install one of them"
+msgstr "Demandez à votre administrateur d'installer un ceux-là"
+
+#: ../command-not-found:77
+#, c-format
+msgid "%prog [options] <command-name>"
+msgstr "%prog [options] <nom-de-la-commande>"
+
+#: ../command-not-found:80
+msgid "use this path to locate data fields"
+msgstr "utilisez ce chemin pour localiser les champs de données"
+
+#: ../command-not-found:83
+msgid "ignore local binaries and display the available packages"
+msgstr "ignorer les binaires locaux et afficher les paquets disponibles"
+
+#: ../command-not-found:86
+msgid "don't print '<command-name>: command not found'"
+msgstr "Ne pas afficher « <nom_de_commande> : commande introuvable »"
+
+#: ../command-not-found:91
+#, c-format
+msgid "%s: command not found"
+msgstr "%s : commande introuvable"
+
+#: ../CommandNotFound/util.py:26
+msgid "Sorry, command-not-found has crashed! Please file a bug report at:"
+msgstr ""
+"Désolé, command-not-found s'est arrêté anormalement ! Veuillez remplir un "
+"rapport de bogue à :"
+
+#: ../CommandNotFound/util.py:28
+msgid "Please include the following information with the report:"
+msgstr "Veuillez inclure les informations suivantes dans le rapport :"
+
+#: ../CommandNotFound/util.py:30
+#, python-format
+msgid "command-not-found version: %s"
+msgstr "Version de command-not-found : %s"
+
+#: ../CommandNotFound/util.py:31
+#, python-format
+msgid "Python version: %d.%d.%d %s %d"
+msgstr "Version de python : %d.%d.%d %s %d"
+
+#: ../CommandNotFound/util.py:37
+msgid "Exception information:"
+msgstr "Information sur l'exception :"

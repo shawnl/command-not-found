@@ -1,0 +1,159 @@
+# Hungarian translation for command-not-found
+# Copyright  2007 Rosetta Contributors and Canonical Ltd 2007
+# This file is distributed under the same license as the command-not-found package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2007.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: command-not-found\n"
+"Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
+"POT-Creation-Date: 2017-09-25 14:27+0000\n"
+"PO-Revision-Date: 2012-05-31 14:53+0000\n"
+"Last-Translator: Gabor Kelemen <kelemeng@openscope.org>\n"
+"Language-Team: Hungarian <hu@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Launchpad-Export-Date: 2017-11-17 05:52+0000\n"
+"X-Generator: Launchpad \n"
+
+#: ../CommandNotFound/CommandNotFound.py:148
+#, python-format
+msgid "No command '%s' found, but there are %s similar ones"
+msgstr "Nem található „%s” nevű parancs, de van %s hasonló"
+
+#: ../CommandNotFound/CommandNotFound.py:150
+#, python-format
+msgid "No command '%s' found, did you mean:"
+msgstr "Nem található „%s” nevű parancs, talán erre gondolt:"
+
+#: ../CommandNotFound/CommandNotFound.py:152
+#, python-format
+msgid " Command '%s' from package '%s' (%s)"
+msgstr " „%s” parancs a „%s” (%s) csomagból"
+
+#: ../CommandNotFound/CommandNotFound.py:210
+msgid "Do you want to install it? "
+msgstr "Szeretné telepíteni? "
+
+#: ../CommandNotFound/CommandNotFound.py:218
+msgid "y"
+msgstr "i"
+
+#: ../CommandNotFound/CommandNotFound.py:245
+#, python-format
+msgid "Command '%s' is available in '%s'"
+msgstr "A parancs („% elérhető innen: „%s”"
+
+#: ../CommandNotFound/CommandNotFound.py:247
+#, python-format
+msgid "Command '%s' is available in the following places"
+msgstr "A parancs („% a következő helyekről érhető el"
+
+#: ../CommandNotFound/CommandNotFound.py:252
+#, python-format
+msgid ""
+"The command could not be located because '%s' is not included in the PATH "
+"environment variable."
+msgstr ""
+"A parancs nem található, mert a PATH környezeti változóból hiányzik a "
+"„%s”."
+
+#: ../CommandNotFound/CommandNotFound.py:254
+msgid ""
+"This is most likely caused by the lack of administrative privileges "
+"associated with your user account."
+msgstr ""
+"Ezt valószínűleg a felhasználói fiókjához tartozó rendszergazdai "
+"jogosultságok hiánya okozza."
+
+#: ../CommandNotFound/CommandNotFound.py:269
+#, python-format
+msgid "The program '%s' is currently not installed. "
+msgstr "A „%s” program jelenleg nincs telepítve. "
+
+#: ../CommandNotFound/CommandNotFound.py:271
+#: ../CommandNotFound/CommandNotFound.py:275
+msgid "You can install it by typing:"
+msgstr "A következő beírásával telepítheti:"
+
+#: ../CommandNotFound/CommandNotFound.py:279
+#, python-format
+msgid ""
+"To run '%s' please ask your administrator to install the package "
+"'%s'"
+msgstr ""
+"A „%s” parancs futtatásához kérje meg a rendszergazdát a "
+"„%s” csomag telepítésére."
+
+#: ../CommandNotFound/CommandNotFound.py:281
+#, python-format
+msgid "You will have to enable the component called '%s'"
+msgstr "Engedélyeznie kell a „%s” nevű összetevőt"
+
+#: ../CommandNotFound/CommandNotFound.py:284
+#, python-format
+msgid "The program '%s' can be found in the following packages:"
+msgstr "A „%s” program a következő csomagokban található meg:"
+
+#: ../CommandNotFound/CommandNotFound.py:289
+#, python-format
+msgid "You will have to enable component called '%s'"
+msgstr "Engedélyeznie kell a „%s” nevű összetevőt"
+
+#: ../CommandNotFound/CommandNotFound.py:291
+#: ../CommandNotFound/CommandNotFound.py:293
+#, python-format
+msgid "Try: %s <selected package>"
+msgstr "Próbálja kiadni a következőt: %s <kiválasztott csomag>"
+
+#: ../CommandNotFound/CommandNotFound.py:295
+msgid "Ask your administrator to install one of them"
+msgstr "Kérje meg a rendszergazdát az egyik telepítésére."
+
+#: ../command-not-found:77
+#, c-format
+msgid "%prog [options] <command-name>"
+msgstr "%prog [kapcsolók] <parancs neve>"
+
+#: ../command-not-found:80
+msgid "use this path to locate data fields"
+msgstr "ezen útvonal használata adatmezők kereséséhez"
+
+#: ../command-not-found:83
+msgid "ignore local binaries and display the available packages"
+msgstr ""
+"helyi binárisok figyelmen kívül hagyása, és az elérhető csomagok "
+"megjelenítése"
+
+#: ../command-not-found:86
+msgid "don't print '<command-name>: command not found'"
+msgstr "ne írja ki a „<parancs-neve>: parancs nem található” szöveget"
+
+#: ../command-not-found:91
+#, c-format
+msgid "%s: command not found"
+msgstr "%s: a parancs nem található"
+
+#: ../CommandNotFound/util.py:26
+msgid "Sorry, command-not-found has crashed! Please file a bug report at:"
+msgstr ""
+"Elnézést, a command-not-found összeomlott. Küldjön hibajelentést ide:"
+
+#: ../CommandNotFound/util.py:28
+msgid "Please include the following information with the report:"
+msgstr "A jelentésbe vegye be a következő információkat:"
+
+#: ../CommandNotFound/util.py:30
+#, python-format
+msgid "command-not-found version: %s"
+msgstr "command-not-found verzió: %s"
+
+#: ../CommandNotFound/util.py:31
+#, python-format
+msgid "Python version: %d.%d.%d %s %d"
+msgstr "Python verzió: %d.%d.%d %s %d"
+
+#: ../CommandNotFound/util.py:37
+msgid "Exception information:"
+msgstr "Kivételinformációk:"

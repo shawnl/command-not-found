@@ -1,0 +1,159 @@
+# Greek, Modern  translation for command-not-found
+# Copyright  2007 Rosetta Contributors and Canonical Ltd 2007
+# This file is distributed under the same license as the command-not-found package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2007.
+# Fotis Tsamis <ftsamis@gmail.com>, 2010.
+msgid ""
+msgstr ""
+"Project-Id-Version: command-not-found\n"
+"Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
+"POT-Creation-Date: 2017-09-25 14:27+0000\n"
+"PO-Revision-Date: 2012-09-30 09:38+0000\n"
+"Last-Translator: tzem <athmakrigiannis@gmail.com>\n"
+"Language-Team: Greek <team@gnome.gr>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Launchpad-Export-Date: 2017-11-17 05:52+0000\n"
+"X-Generator: Launchpad \n"
+
+#: ../CommandNotFound/CommandNotFound.py:148
+#, python-format
+msgid "No command '%s' found, but there are %s similar ones"
+msgstr "Δε βρέθηκε εντολή '%s', αλλά υπάρχουν %s παρόμοιες"
+
+#: ../CommandNotFound/CommandNotFound.py:150
+#, python-format
+msgid "No command '%s' found, did you mean:"
+msgstr "Δε βρέθηκε εντολή '%s', μήπως εννοούσατε:"
+
+#: ../CommandNotFound/CommandNotFound.py:152
+#, python-format
+msgid " Command '%s' from package '%s' (%s)"
+msgstr " Εντολή '%s' από το πακέτο '%s' (%s)"
+
+#: ../CommandNotFound/CommandNotFound.py:210
+msgid "Do you want to install it? "
+msgstr "Θέλετε να το εγκαταστήσετε; "
+
+#: ../CommandNotFound/CommandNotFound.py:218
+msgid "y"
+msgstr "y"
+
+#: ../CommandNotFound/CommandNotFound.py:245
+#, python-format
+msgid "Command '%s' is available in '%s'"
+msgstr "Η εντολή '%s' είναι διαθέσιμη στο '%s'"
+
+#: ../CommandNotFound/CommandNotFound.py:247
+#, python-format
+msgid "Command '%s' is available in the following places"
+msgstr "Η εντολή '%s' είναι διαθέσιμη στα παρακάτω μέρη"
+
+#: ../CommandNotFound/CommandNotFound.py:252
+#, python-format
+msgid ""
+"The command could not be located because '%s' is not included in the PATH "
+"environment variable."
+msgstr ""
+"Η εντολή δεν ήταν δυνατό να εντοπισθεί γιατί το '%s' δεν περιέχεται στη "
+"μεταβλητή περιβάλλοντος PATH."
+
+#: ../CommandNotFound/CommandNotFound.py:254
+msgid ""
+"This is most likely caused by the lack of administrative privileges "
+"associated with your user account."
+msgstr ""
+"Αυτό προκαλείται πιθανότατα από την έλλειψη διαχειριστικών προνομίων του "
+"λογαριασμού χρήστη"
+
+#: ../CommandNotFound/CommandNotFound.py:269
+#, python-format
+msgid "The program '%s' is currently not installed. "
+msgstr "Το πρόγραμμα '%s' δεν είναι αυτή τη στιγμή εγκατεστημένο. "
+
+#: ../CommandNotFound/CommandNotFound.py:271
+#: ../CommandNotFound/CommandNotFound.py:275
+msgid "You can install it by typing:"
+msgstr "Μπορείτε να το εγκαταστήσετε πληκτρολογώντας:"
+
+#: ../CommandNotFound/CommandNotFound.py:279
+#, python-format
+msgid ""
+"To run '%s' please ask your administrator to install the package "
+"'%s'"
+msgstr ""
+"Για να εκτελέσετε το '%s' παρακαλούμε ζητήστε από τον διαχειριστή "
+"σας να εγκαταστήσει το πακέτο '%s'"
+
+#: ../CommandNotFound/CommandNotFound.py:281
+#, python-format
+msgid "You will have to enable the component called '%s'"
+msgstr "Θα πρέπει να ενεργοποιήσετε το συστατικό που λέγεται '%s'"
+
+#: ../CommandNotFound/CommandNotFound.py:284
+#, python-format
+msgid "The program '%s' can be found in the following packages:"
+msgstr "Το πρόγραμμα '%s' μπορεί να βρεθεί στα παρακάτω πακέτα:"
+
+#: ../CommandNotFound/CommandNotFound.py:289
+#, python-format
+msgid "You will have to enable component called '%s'"
+msgstr "Θα πρέπει να ενεργοποιήσετε το συστατικό που λέγεται '%s'"
+
+#: ../CommandNotFound/CommandNotFound.py:291
+#: ../CommandNotFound/CommandNotFound.py:293
+#, python-format
+msgid "Try: %s <selected package>"
+msgstr "Δοκιμάστε: %s <επιλεγμένο πακέτο>"
+
+#: ../CommandNotFound/CommandNotFound.py:295
+msgid "Ask your administrator to install one of them"
+msgstr "Ζητήστε από τον διαχειριστή σας να εγκαταστήσει ένα από αυτά"
+
+#: ../command-not-found:77
+#, c-format
+msgid "%prog [options] <command-name>"
+msgstr "%prog [επιλογές] <όνομα-εντολής>"
+
+#: ../command-not-found:80
+msgid "use this path to locate data fields"
+msgstr "χρησιμοποιήστε αυτή τη διαδρομή για να εντοπίσετε τα πεδία δεδομένων"
+
+#: ../command-not-found:83
+msgid "ignore local binaries and display the available packages"
+msgstr ""
+"αγνόηση των τοπικών δυαδικών αρχείων και εμφάνιση των διαθέσιμων πακέτων"
+
+#: ../command-not-found:86
+msgid "don't print '<command-name>: command not found'"
+msgstr "να μην εκτυπωθεί '<command-name>: η εντολή δεν βρέθηκε'"
+
+#: ../command-not-found:91
+#, c-format
+msgid "%s: command not found"
+msgstr "%s: η εντολή δε βρέθηκε"
+
+#: ../CommandNotFound/util.py:26
+msgid "Sorry, command-not-found has crashed! Please file a bug report at:"
+msgstr ""
+"Συγνώμη, το command-not-found has κατέρρευσε! Παρακαλούμε καταχωρίστε μια "
+"αναφορά σφάλματος στο:"
+
+#: ../CommandNotFound/util.py:28
+msgid "Please include the following information with the report:"
+msgstr "Παρακαλούμε να συμπεριλάβετε στην αναφορά τις παρακάτω πληροφορίες:"
+
+#: ../CommandNotFound/util.py:30
+#, python-format
+msgid "command-not-found version: %s"
+msgstr "Έκδοση command-not-found: %s"
+
+#: ../CommandNotFound/util.py:31
+#, python-format
+msgid "Python version: %d.%d.%d %s %d"
+msgstr "Έκδοση Python: %d.%d.%d %s %d"
+
+#: ../CommandNotFound/util.py:37
+msgid "Exception information:"
+msgstr "Πληροφορίες εξαίρεσης:"
