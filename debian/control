@@ -1,0 +1,15 @@
+Source: command-not-found
+Section: admin
+Priority: optional
+Maintainer: Shawn Landden <slandden@gmail.com>
+Build-Depends: debhelper (>= 10.3),
+	meson,
+	gettext
+Standards-Version: 4.1.1.1
+
+Package: command-not-found
+Architecture: any
+Depends: apt-file, apt, ${shlibs:Depends}, ${misc:Depends}
+Description: Suggest installation of packages in interactive bash sessions
+ This package will install handler for command_not_found that looks up
+ programs not currently installed but available from the repositories.

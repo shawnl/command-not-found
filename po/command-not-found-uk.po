@@ -1,0 +1,157 @@
+# Ukrainian translation for command-not-found
+# Copyright  2008 Rosetta Contributors and Canonical Ltd 2008
+# This file is distributed under the same license as the command-not-found package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2008.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: command-not-found\n"
+"Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
+"POT-Creation-Date: 2017-09-25 14:27+0000\n"
+"PO-Revision-Date: 2013-05-06 15:33+0000\n"
+"Last-Translator: stuartlittle <Stuartlittle1970@gmail.com>\n"
+"Language-Team: Ukrainian <uk@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Launchpad-Export-Date: 2017-11-17 05:52+0000\n"
+"X-Generator: Launchpad \n"
+
+#: ../CommandNotFound/CommandNotFound.py:148
+#, python-format
+msgid "No command '%s' found, but there are %s similar ones"
+msgstr "Команду '%s' знайдено, але є ще %s схожих"
+
+#: ../CommandNotFound/CommandNotFound.py:150
+#, python-format
+msgid "No command '%s' found, did you mean:"
+msgstr "Команду '%s' не знайдено, можливо, Ви мали на увазі:"
+
+#: ../CommandNotFound/CommandNotFound.py:152
+#, python-format
+msgid " Command '%s' from package '%s' (%s)"
+msgstr " Команда '%s' із пакунку '%s' (%s)"
+
+#: ../CommandNotFound/CommandNotFound.py:210
+msgid "Do you want to install it? "
+msgstr "Ви справді бажаєте встановити? "
+
+#: ../CommandNotFound/CommandNotFound.py:218
+msgid "y"
+msgstr "y"
+
+#: ../CommandNotFound/CommandNotFound.py:245
+#, python-format
+msgid "Command '%s' is available in '%s'"
+msgstr "Команда '%s' наявна у '%s'"
+
+#: ../CommandNotFound/CommandNotFound.py:247
+#, python-format
+msgid "Command '%s' is available in the following places"
+msgstr "Команда '%s' наявна у наступних місцях"
+
+#: ../CommandNotFound/CommandNotFound.py:252
+#, python-format
+msgid ""
+"The command could not be located because '%s' is not included in the PATH "
+"environment variable."
+msgstr ""
+"Неможливо знайти команду, бо '%s' відсутнє у змінній середовища PATH."
+
+#: ../CommandNotFound/CommandNotFound.py:254
+msgid ""
+"This is most likely caused by the lack of administrative privileges "
+"associated with your user account."
+msgstr ""
+"Швидше за все, це викликано відсутністю адміністративних привілеїв для "
+"Вашого профілю."
+
+#: ../CommandNotFound/CommandNotFound.py:269
+#, python-format
+msgid "The program '%s' is currently not installed. "
+msgstr "Програма '%s' наразі не встановлена. "
+
+#: ../CommandNotFound/CommandNotFound.py:271
+#: ../CommandNotFound/CommandNotFound.py:275
+msgid "You can install it by typing:"
+msgstr "Ви можете встановити її набравши таке:"
+
+#: ../CommandNotFound/CommandNotFound.py:279
+#, python-format
+msgid ""
+"To run '%s' please ask your administrator to install the package "
+"'%s'"
+msgstr ""
+"Щоб виконати '%s', попрохайте адміністратора встановити пакунок "
+"'%s'"
+
+#: ../CommandNotFound/CommandNotFound.py:281
+#, python-format
+msgid "You will have to enable the component called '%s'"
+msgstr "Буде потрібно увімкнути компонент '%s'"
+
+#: ../CommandNotFound/CommandNotFound.py:284
+#, python-format
+msgid "The program '%s' can be found in the following packages:"
+msgstr "Програму '%s' може бути знайдено у наступних пакунках:"
+
+#: ../CommandNotFound/CommandNotFound.py:289
+#, python-format
+msgid "You will have to enable component called '%s'"
+msgstr "Буде потрібно увімкнути компонент '%s'"
+
+#: ../CommandNotFound/CommandNotFound.py:291
+#: ../CommandNotFound/CommandNotFound.py:293
+#, python-format
+msgid "Try: %s <selected package>"
+msgstr "Спробуйте: %s <selected package>"
+
+#: ../CommandNotFound/CommandNotFound.py:295
+msgid "Ask your administrator to install one of them"
+msgstr "Попрохайте адміністратора встановити одного з них"
+
+#: ../command-not-found:77
+#, c-format
+msgid "%prog [options] <command-name>"
+msgstr "%prog [опції] <ім’я команди>"
+
+#: ../command-not-found:80
+msgid "use this path to locate data fields"
+msgstr "використовувати цей шлях для знаходження полів даних"
+
+#: ../command-not-found:83
+msgid "ignore local binaries and display the available packages"
+msgstr "ігнорувати локальні двійкові команди та показати наявні пакунки"
+
+#: ../command-not-found:86
+msgid "don't print '<command-name>: command not found'"
+msgstr "не виводити '<command-name>: команду не знайдено'"
+
+#: ../command-not-found:91
+#, c-format
+msgid "%s: command not found"
+msgstr "%s: команду не знайдено"
+
+#: ../CommandNotFound/util.py:26
+msgid "Sorry, command-not-found has crashed! Please file a bug report at:"
+msgstr ""
+"Вибачте, command-not-found дав збій. Будь ласка, надішліть звіт про цей збій "
+"сюди:"
+
+#: ../CommandNotFound/util.py:28
+msgid "Please include the following information with the report:"
+msgstr "Будь ласка, помістіть у звіт наступну інформацію:"
+
+#: ../CommandNotFound/util.py:30
+#, python-format
+msgid "command-not-found version: %s"
+msgstr "Версія command-not-found: %s"
+
+#: ../CommandNotFound/util.py:31
+#, python-format
+msgid "Python version: %d.%d.%d %s %d"
+msgstr "Версія Python: %d.%d.%d %s %d"
+
+#: ../CommandNotFound/util.py:37
+msgid "Exception information:"
+msgstr "Дані про виняток:"

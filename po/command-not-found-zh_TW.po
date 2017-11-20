@@ -1,0 +1,150 @@
+# Traditional Chinese translation for command-not-found
+# Copyright  2007 Rosetta Contributors and Canonical Ltd 2007
+# This file is distributed under the same license as the command-not-found package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2007.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: command-not-found\n"
+"Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
+"POT-Creation-Date: 2017-09-25 14:27+0000\n"
+"PO-Revision-Date: 2013-07-16 15:37+0000\n"
+"Last-Translator: Walter Cheuk <wwycheuk@gmail.com>\n"
+"Language-Team: Traditional Chinese <zh_TW@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Launchpad-Export-Date: 2017-11-17 05:52+0000\n"
+"X-Generator: Launchpad \n"
+
+#: ../CommandNotFound/CommandNotFound.py:148
+#, python-format
+msgid "No command '%s' found, but there are %s similar ones"
+msgstr "無 '%s' 這個指令，但是有 %s 個指令很近似"
+
+#: ../CommandNotFound/CommandNotFound.py:150
+#, python-format
+msgid "No command '%s' found, did you mean:"
+msgstr "無 '%s' 這個指令，是指這個嗎："
+
+#: ../CommandNotFound/CommandNotFound.py:152
+#, python-format
+msgid " Command '%s' from package '%s' (%s)"
+msgstr " '%s' 指令來自於 '%s' 套件 (%s)"
+
+#: ../CommandNotFound/CommandNotFound.py:210
+msgid "Do you want to install it? "
+msgstr "是否安裝？"
+
+#: ../CommandNotFound/CommandNotFound.py:218
+msgid "y"
+msgstr "y"
+
+#: ../CommandNotFound/CommandNotFound.py:245
+#, python-format
+msgid "Command '%s' is available in '%s'"
+msgstr "'%s' 有提供 '%s' 指令"
+
+#: ../CommandNotFound/CommandNotFound.py:247
+#, python-format
+msgid "Command '%s' is available in the following places"
+msgstr "以下地方提供 '%s' 指令"
+
+#: ../CommandNotFound/CommandNotFound.py:252
+#, python-format
+msgid ""
+"The command could not be located because '%s' is not included in the PATH "
+"environment variable."
+msgstr "無此指令，因為 PATH 環境變數並未包含 '%s'。"
+
+#: ../CommandNotFound/CommandNotFound.py:254
+msgid ""
+"This is most likely caused by the lack of administrative privileges "
+"associated with your user account."
+msgstr "最大可能是您的使用者帳號沒有管理員權限。"
+
+#: ../CommandNotFound/CommandNotFound.py:269
+#, python-format
+msgid "The program '%s' is currently not installed. "
+msgstr "程式 '%s' 目前尚未安裝。 "
+
+#: ../CommandNotFound/CommandNotFound.py:271
+#: ../CommandNotFound/CommandNotFound.py:275
+msgid "You can install it by typing:"
+msgstr "您可以由輸入以下內容安裝："
+
+#: ../CommandNotFound/CommandNotFound.py:279
+#, python-format
+msgid ""
+"To run '%s' please ask your administrator to install the package "
+"'%s'"
+msgstr "要執行 '%s'，請要求您的管理員安裝 '%s' 套件"
+
+#: ../CommandNotFound/CommandNotFound.py:281
+#, python-format
+msgid "You will have to enable the component called '%s'"
+msgstr "您需要將名為 '%s' 的元件啟動"
+
+#: ../CommandNotFound/CommandNotFound.py:284
+#, python-format
+msgid "The program '%s' can be found in the following packages:"
+msgstr "程式 '%s' 可在下列的套件中被找到："
+
+#: ../CommandNotFound/CommandNotFound.py:289
+#, python-format
+msgid "You will have to enable component called '%s'"
+msgstr "您需要將名為 '%s' 的元件啟動"
+
+#: ../CommandNotFound/CommandNotFound.py:291
+#: ../CommandNotFound/CommandNotFound.py:293
+#, python-format
+msgid "Try: %s <selected package>"
+msgstr "嘗試: %s <selected package>"
+
+#: ../CommandNotFound/CommandNotFound.py:295
+msgid "Ask your administrator to install one of them"
+msgstr "要求您的管理員安裝其中之一"
+
+#: ../command-not-found:77
+#, c-format
+msgid "%prog [options] <command-name>"
+msgstr "%prog [選項] <指令名稱>"
+
+#: ../command-not-found:80
+msgid "use this path to locate data fields"
+msgstr "使用該路經指出資料的範圍"
+
+#: ../command-not-found:83
+msgid "ignore local binaries and display the available packages"
+msgstr "忽略本地二進位檔案並顯示可用的套件"
+
+#: ../command-not-found:86
+msgid "don't print '<command-name>: command not found'"
+msgstr "別顯示 '<指令名稱>：無此指令'"
+
+#: ../command-not-found:91
+#, c-format
+msgid "%s: command not found"
+msgstr "%s：無此指令"
+
+#: ../CommandNotFound/util.py:26
+msgid "Sorry, command-not-found has crashed! Please file a bug report at:"
+msgstr "抱歉，command-not-found 當掉了！請在此提交錯誤報告："
+
+#: ../CommandNotFound/util.py:28
+msgid "Please include the following information with the report:"
+msgstr "請將以下訊息包含在報告中："
+
+#: ../CommandNotFound/util.py:30
+#, python-format
+msgid "command-not-found version: %s"
+msgstr "command-not-found 版本：%s"
+
+#: ../CommandNotFound/util.py:31
+#, python-format
+msgid "Python version: %d.%d.%d %s %d"
+msgstr "Python 版本：%d.%d.%d %s %d"
+
+#: ../CommandNotFound/util.py:37
+msgid "Exception information:"
+msgstr "例外訊息："

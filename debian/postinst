@@ -1,0 +1,8 @@
+#!/bin/sh
+set -e
+if [ -z "$(find /var/cache/command-not-found -mindepth 1)" ]; then
+        echo "You need to run 'update-command-not-found' as root to update the cache."
+fi
+
+#DEBHELPER#
+

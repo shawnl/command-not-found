@@ -1,0 +1,150 @@
+# Amharic translation for command-not-found
+# Copyright  2009 Rosetta Contributors and Canonical Ltd 2009
+# This file is distributed under the same license as the command-not-found package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2009.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: command-not-found\n"
+"Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
+"POT-Creation-Date: 2017-09-25 14:27+0000\n"
+"PO-Revision-Date: 2016-12-17 23:49+0000\n"
+"Last-Translator: samson <Unknown>\n"
+"Language-Team: Amharic <am@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Launchpad-Export-Date: 2017-11-17 05:52+0000\n"
+"X-Generator: Launchpad \n"
+
+#: ../CommandNotFound/CommandNotFound.py:148
+#, python-format
+msgid "No command '%s' found, but there are %s similar ones"
+msgstr "ምንም ትእዛዝ '%s' አልተገኘም: ነገር ግን እነዚህ %s ተመሳሳዮች አሉ"
+
+#: ../CommandNotFound/CommandNotFound.py:150
+#, python-format
+msgid "No command '%s' found, did you mean:"
+msgstr "ምንም ትእዛዙ '%s' አልተገኘም ማለት ነው:"
+
+#: ../CommandNotFound/CommandNotFound.py:152
+#, python-format
+msgid " Command '%s' from package '%s' (%s)"
+msgstr " ትእዛዝ '%s' ለ ጥቅል '%s' (%s)"
+
+#: ../CommandNotFound/CommandNotFound.py:210
+msgid "Do you want to install it? "
+msgstr "እርስዎ ሊገጥሙት ይፈልጋሉ? "
+
+#: ../CommandNotFound/CommandNotFound.py:218
+msgid "y"
+msgstr "አዎ"
+
+#: ../CommandNotFound/CommandNotFound.py:245
+#, python-format
+msgid "Command '%s' is available in '%s'"
+msgstr "ትእዛዝ '%s' ዝግጁ ነው በ '%s'"
+
+#: ../CommandNotFound/CommandNotFound.py:247
+#, python-format
+msgid "Command '%s' is available in the following places"
+msgstr "ትእዛዝ '%s' ዝግጁ ነው በሚቀጥሉት ቦታዎች ውስጥ"
+
+#: ../CommandNotFound/CommandNotFound.py:252
+#, python-format
+msgid ""
+"The command could not be located because '%s' is not included in the PATH "
+"environment variable."
+msgstr "ትእዛዙን ፈልጎ ማግኘት አልተቻለም ምክንያቱምe '%s' በ መንገድ አካባቢ ተለዋዋጭ አልተገኘም"
+
+#: ../CommandNotFound/CommandNotFound.py:254
+msgid ""
+"This is most likely caused by the lack of administrative privileges "
+"associated with your user account."
+msgstr "ይህ ችግር በግምት ሊፈጠር የሚችለው በ አስተዳደር ፍቃድ ማጣት ነው: በ እርስዎ የ ተጠቃሚ መግለጫ ውስጥ"
+
+#: ../CommandNotFound/CommandNotFound.py:269
+#, python-format
+msgid "The program '%s' is currently not installed. "
+msgstr "ይህ ፕሮግራም '%s' ለጊዜው አልተገጠመም "
+
+#: ../CommandNotFound/CommandNotFound.py:271
+#: ../CommandNotFound/CommandNotFound.py:275
+msgid "You can install it by typing:"
+msgstr "በመጻፍ መግጠም ይችላሉ"
+
+#: ../CommandNotFound/CommandNotFound.py:279
+#, python-format
+msgid ""
+"To run '%s' please ask your administrator to install the package "
+"'%s'"
+msgstr "ለማስኬድ '%s ' እባክዎ አስተዳዳሪውን ያማክሩ ይህን ጥቅል ለመግጠም '%s'"
+
+#: ../CommandNotFound/CommandNotFound.py:281
+#, python-format
+msgid "You will have to enable the component called '%s'"
+msgstr "እርስዎ ማስቻል አለብዎት ይህን አካል የ ተባለውን '%s'"
+
+#: ../CommandNotFound/CommandNotFound.py:284
+#, python-format
+msgid "The program '%s' can be found in the following packages:"
+msgstr "ፕሮግራሙ '%s' ከዚህ ጥቅል ውስጥ ይገኛል:"
+
+#: ../CommandNotFound/CommandNotFound.py:289
+#, python-format
+msgid "You will have to enable component called '%s'"
+msgstr "ይህን አካል ማስቻል አለብዎት የ ተባለውን '%s'"
+
+#: ../CommandNotFound/CommandNotFound.py:291
+#: ../CommandNotFound/CommandNotFound.py:293
+#, python-format
+msgid "Try: %s <selected package>"
+msgstr "ይሞክሩ: %s <selected package>"
+
+#: ../CommandNotFound/CommandNotFound.py:295
+msgid "Ask your administrator to install one of them"
+msgstr "እባክዎ አስተዳዳሪውን ያማክሩ አንዳቸውን እንዲገጥሙ"
+
+#: ../command-not-found:77
+#, c-format
+msgid "%prog [options] <command-name>"
+msgstr "%prog [ምርጫዎች] <command-name>"
+
+#: ../command-not-found:80
+msgid "use this path to locate data fields"
+msgstr "ይህን መንገድ ይጠቀሙ ዳታ ፊልድስን ለማግኘት"
+
+#: ../command-not-found:83
+msgid "ignore local binaries and display the available packages"
+msgstr "የ አካባቢ ባይነሪዎችን መተው እና ዝግጁ ጥቅሎችን ማሳያ"
+
+#: ../command-not-found:86
+msgid "don't print '<command-name>: command not found'"
+msgstr "አታትም '<command-name>: ትእዛዙ አልተገኘም'"
+
+#: ../command-not-found:91
+#, c-format
+msgid "%s: command not found"
+msgstr "%s: ትእዛዙ አልተገኘም"
+
+#: ../CommandNotFound/util.py:26
+msgid "Sorry, command-not-found has crashed! Please file a bug report at:"
+msgstr "አዝናለሁ: ይህ-ትእዛዝ-አልተገኘም ተጋጭቷል! እባክዎን የ ችግር መግለጫ ይላኩ ለ:"
+
+#: ../CommandNotFound/util.py:28
+msgid "Please include the following information with the report:"
+msgstr "እባክዎን የሚቀጥለውን መረጃ ከ መግለጫው ጋር ያካትቱ:"
+
+#: ../CommandNotFound/util.py:30
+#, python-format
+msgid "command-not-found version: %s"
+msgstr "ይህ-ትእዛዝ-አልተገኘም እትም: %s"
+
+#: ../CommandNotFound/util.py:31
+#, python-format
+msgid "Python version: %d.%d.%d %s %d"
+msgstr "Python እትም: %d.%d.%d %s %d"
+
+#: ../CommandNotFound/util.py:37
+msgid "Exception information:"
+msgstr "የ ተለየ መረጃ:"
