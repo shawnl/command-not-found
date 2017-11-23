@@ -271,7 +271,7 @@ int main(int argc, char *argv[]) {
 	int r, r2;
 	___cleanup_free_ char *v = NULL, *sources_list = NULL;
 	size_t sz;
-	char buf[8192], buf2[4096], *package, **z, *s, *component;
+	char buf[8192], buf2[4096], *package, **z, *s, *t, *component;
 	char **prefixes = STRV_MAKE("/usr/bin/", "/usr/sbin/", "/bin/", "/sbin/",
 			"/usr/local/bin/", "/usr/games/", NULL);
 
@@ -384,17 +384,17 @@ int main(int argc, char *argv[]) {
 	r = read_full_file("/etc/apt/sources.list", &sources_list, &sz);
 	if (r < 0)
 		goto fail;
-	s = strstr(sources_list, s);
+	t = strstr(sources_list, s);
 	if (!s)
 		goto component_print;
 
-	s += strcspn(s, "#\n");
+	t += strcspn(t, "#\n");
 	if (!s)
 		goto component_print;
-	*s = '\0';
+	*t = '\0';
 
-	/* not commented out */
-	if (strrchr(s, '#') < strrchr(s, '\n')) {
+	/* commented out */
+	if (strrchr(sources_list, '#') > strrchr(sources_list, '\n')) {
 component_print:
 		dprintf(2, _("You will have to enable "\
 				"the component called '%s'"), s);
