@@ -281,6 +281,10 @@ int main(int argc, char *argv[]) {
 	bindtextdomain(PACKAGE, LOCALEDIR);
 	textdomain(PACKAGE);
 
+	if (argc == 1) {
+		errno = EINVAL;
+		goto fail;
+	}
 	r = parse_argv(argc, argv);
 	if (r <= 0) {
 		return 1;
