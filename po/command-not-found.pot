@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-11-17 14:40-0800\n"
+"POT-Creation-Date: 2017-11-22 22:46-0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -22,50 +22,55 @@ msgstr ""
 msgid "No command '%s' found, did you mean:"
 msgstr ""
 
-#: ../command-not-found.c:131 ../command-not-found.c:153
-#: ../command-not-found.c:175 ../command-not-found.c:198
+#: ../command-not-found.c:136 ../command-not-found.c:163
+#: ../command-not-found.c:190 ../command-not-found.c:218
 #, c-format
 msgid " Command '%s' from package '%s' (%s)"
 msgstr ""
 
-#: ../command-not-found.c:292
+#: ../command-not-found.c:312
 #, c-format
 msgid ""
 "The command could not be located because '%s' is not included in the PATH "
 "environment variable."
 msgstr ""
 
-#: ../command-not-found.c:296
+#: ../command-not-found.c:316
 msgid ""
 "This is most likely caused by the lack of administrative priviledges "
 "associated with your user account."
 msgstr ""
 
-#: ../command-not-found.c:306
+#: ../command-not-found.c:326
 #, c-format
 msgid "Command '%s' is available in '%s'"
 msgstr ""
 
-#: ../command-not-found.c:338
+#: ../command-not-found.c:334
+#, c-format
+msgid "%s not found. Run 'update-command-not-found' as root.\n"
+msgstr ""
+
+#: ../command-not-found.c:363
 #, c-format
 msgid "The program '%s' is currently not installed. "
 msgstr ""
 
-#: ../command-not-found.c:340 ../command-not-found.c:343
+#: ../command-not-found.c:365 ../command-not-found.c:368
 msgid "You can install it by typing:"
 msgstr ""
 
-#: ../command-not-found.c:346
+#: ../command-not-found.c:371
 #, c-format
 msgid "To run '%s' please ask your administrator to install the package '%s'"
 msgstr ""
 
-#: ../command-not-found.c:375
+#: ../command-not-found.c:399
 #, c-format
 msgid "You will have to enable the component called '%s'"
 msgstr ""
 
-#: ../command-not-found.c:386
+#: ../command-not-found.c:410
 #, c-format
 msgid "%s: command not found"
 msgstr ""

@@ -331,8 +331,9 @@ int main(int argc, char *argv[]) {
 
 	if (r2 != 0) {
 		if (errno == ENOENT)
-			dprintf(2, "/var/cache/command-not-found/db not found."
-				"run 'update-command-not-found' as root\n");
+			dprintf(2, _("%s not found. "
+				"Run 'update-command-not-found' as root.\n"),
+				"/var/cache/command-not-found/db");
 		goto fail;
 	}
 
