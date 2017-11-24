@@ -1,3 +1,8 @@
+/*
+ * Inspired by https://github.com/pts/pts-line-bisect
+ * by Péter Szabó <pts@fazekas.hu>
+ */
+
 #define _GNU_SOURCE
 #include <stdio.h>
 #include <stdint.h>
