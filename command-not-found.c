@@ -123,6 +123,8 @@ void spell_check(char *command) {
 		return;
 	/* deletes */
 	for (int i = 0; i < strlen(command); i++) {
+		if ((command[i] == command[i + 1]))
+			continue;
 		memcpy(buf, command, i);
 		memcpy(buf + i, command + i + 1, strlen(command) - (i + 1));
 		buf[strlen(command) - 1] = '\xff';
