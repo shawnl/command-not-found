@@ -28,13 +28,19 @@
 #include <stdlib.h>
 #include <unistd.h>
 #include <stdbool.h>
+#include <sys/mman.h>
+#include <sys/stat.h>
+#include <fcntl.h>
 #define _ gettext
 
 #include "command-not-found.h"
-#include "pts_lbsearch.h"
+#include "bisect.h"
 
 bool arg_ignore_installed = false;
 char *arg_command = NULL;
+
+char *file;
+size_t file_size;
 
 				/* main is implied */
 static const char *components[] = {"contrib", "non-free", "universe",
@@ -65,14 +71,17 @@ bool is_root() {
 }
 
 int get_entry(char *out, size_t out_len, char *command_ff_terminated) {
-	int r;
+	char *r;
 
-	r = pts_lbsearch_main(4, STRV_MAKE(
-		"/usr/share/command-not-found/pts_lbsearch", "-p",
-		"/var/cache/command-not-found/db", command_ff_terminated),
-		out, out_len);
-	if (r < 0)
+	r = bisect_search(file, file_size, command_ff_terminated);
+	if (!r)
 		return -ENOENT;
+
+	char *f = memchr(r, '\n', file + file_size - r);
+	if (!f)
+		return -ENOENT;
+	int len = MIN(f - r + 1, out_len);
+	strncpy(out, r, len);
 	if (strlen(out) == 0)
 		return -ENOENT;
 
@@ -271,12 +280,13 @@ int main(int argc, char *argv[]) {
 	int r, r2;
 	___cleanup_free_ char *v = NULL, *sources_list = NULL;
 	size_t sz;
+	int fd = -1;
 	char buf[8192], buf2[4096], *package, **z, *s, *t, *component;
 	char **prefixes = STRV_MAKE("/usr/bin/", "/usr/sbin/", "/bin/", "/sbin/",
 			"/usr/local/bin/", "/usr/games/", NULL);
 
 	/* run this early to prime the common case. */
-	r2 = access("/var/cache/command-not-found/db", R_OK);
+	fd = open("/var/cache/command-not-found/db", O_RDONLY);
 
 	bindtextdomain(PACKAGE, LOCALEDIR);
 	textdomain(PACKAGE);
@@ -329,13 +339,21 @@ int main(int argc, char *argv[]) {
 		return EXIT_SUCCESS;
 	}
 
-	if (r2 != 0) {
+	if (fd < 0) {
 		if (errno == ENOENT)
 			dprintf(2, _("%s not found. "
 				"Run 'update-command-not-found' as root.\n"),
 				"/var/cache/command-not-found/db");
 		goto fail;
 	}
+
+	struct stat st;
+
+	r = fstat(fd, &st);
+	if (r < 0)
+		abort();
+	file_size = st.st_size;
+	file = mmap(NULL, file_size, PROT_READ, MAP_SHARED, fd, 0);
 
 	sz = snprintf(buf2, sizeof(buf2), "%s\xff", arg_command);
 	if (sz <= 0)
