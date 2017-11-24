@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-11-22 22:46-0800\n"
+"POT-Creation-Date: 2017-11-24 12:04-0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,66 +17,66 @@ msgstr ""
 "Content-Type: text/plain; charset=CHARSET\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: ../command-not-found.c:86
+#: ../command-not-found.c:96
 #, c-format
 msgid "No command '%s' found, did you mean:"
 msgstr ""
 
-#: ../command-not-found.c:136 ../command-not-found.c:163
-#: ../command-not-found.c:190 ../command-not-found.c:218
+#: ../command-not-found.c:148 ../command-not-found.c:175
+#: ../command-not-found.c:202 ../command-not-found.c:230
 #, c-format
 msgid " Command '%s' from package '%s' (%s)"
 msgstr ""
 
-#: ../command-not-found.c:312
+#: ../command-not-found.c:326
 #, c-format
 msgid ""
 "The command could not be located because '%s' is not included in the PATH "
 "environment variable."
 msgstr ""
 
-#: ../command-not-found.c:316
+#: ../command-not-found.c:330
 msgid ""
 "This is most likely caused by the lack of administrative priviledges "
 "associated with your user account."
 msgstr ""
 
-#: ../command-not-found.c:326
+#: ../command-not-found.c:340
 #, c-format
 msgid "Command '%s' is available in '%s'"
 msgstr ""
 
-#: ../command-not-found.c:334
+#: ../command-not-found.c:348
 #, c-format
 msgid "%s not found. Run 'update-command-not-found' as root.\n"
 msgstr ""
 
-#: ../command-not-found.c:363
+#: ../command-not-found.c:385
 #, c-format
 msgid "The program '%s' is currently not installed. "
 msgstr ""
 
-#: ../command-not-found.c:365 ../command-not-found.c:368
+#: ../command-not-found.c:387 ../command-not-found.c:390
 msgid "You can install it by typing:"
 msgstr ""
 
-#: ../command-not-found.c:371
+#: ../command-not-found.c:393
 #, c-format
 msgid "To run '%s' please ask your administrator to install the package '%s'"
 msgstr ""
 
-#: ../command-not-found.c:399
+#: ../command-not-found.c:421
 #, c-format
 msgid "You will have to enable the component called '%s'"
 msgstr ""
 
-#: ../command-not-found.c:410
+#: ../command-not-found.c:432
 #, c-format
 msgid "%s: command not found"
 msgstr ""
 
 #: ../update-command-not-found.c:58
 msgid ""
-"Contents of packages not availble. Install 'apt-file' and then run 'apt-get "
+"Contents of packages not available. Install 'apt-file' and then run 'apt-get "
 "update'.\n"
 msgstr ""
