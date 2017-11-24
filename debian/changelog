@@ -1,7 +1,7 @@
-command-not-found (0.4) sid; urgency=medium
+command-not-found (0.4) unstable; urgency=medium
 
   * Rewrite in C.
-  * Remind user to run 'apt-get update' after installing apt-file (Closes: #857090)
+  * Remind user to 'apt-get update' after installing apt-file (Closes: #857090)
   * Limit spell check suggestions to 4 characters or more
 
  -- Shawn Landden <slandden@gmail.com>  Mon, 13 Nov 2017 18:44:17 -0800
