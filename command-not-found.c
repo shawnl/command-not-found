@@ -327,6 +327,7 @@ int main(int argc, char *argv[]) {
 "located because '%s' is not included in the PATH environment variable."), s);
 			dprintf(2, "\n");
 			if (strcmp(s + strlen(s) - 5, "sbin/") == 0) {
+			/* keeping this spelling error as all the translations depend on this key*/
 				dprintf(2, _("This is most likely caused by the"\
 " lack of administrative priviledges associated with your user account."));
 				dprintf(2, "\n");
