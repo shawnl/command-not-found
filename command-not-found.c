@@ -71,24 +71,6 @@ bool is_root() {
 	return (geteuid() == 0);
 }
 
-int get_entry(char *out, size_t out_len, char *command_ff_terminated) {
-	char *r;
-
-	r = bisect_search(file, file_size, command_ff_terminated);
-	if (!r)
-		return -ENOENT;
-
-	char *f = memchr(r, '\n', file + file_size - r);
-	if (!f)
-		return -ENOENT;
-	int len = MIN(f - r + 1, out_len);
-	strncpy(out, r, len);
-	if (strlen(out) == 0)
-		return -ENOENT;
-
-	return 0;
-}
-
 void spell_check_print_header(char *command) {
 	static bool printed_header = false;
 
@@ -116,8 +98,7 @@ void spell_check_print_header(char *command) {
  */
 void spell_check(char *command) {
 	char alphabet[] = "abcdefghijklmnopqrstuvwxyz-_";
-	char buf[4096], *component, *package, *s;
-	char bufout[4096];
+	char buf[4096], *component, *bin, *package, *s, *d;
 
 	if (strlen(command) < 4 || strlen(command) >= sizeof(buf) - 2)
 		return;
@@ -129,10 +110,12 @@ void spell_check(char *command) {
 		memcpy(buf + i, command + i + 1, strlen(command) - (i + 1));
 		buf[strlen(command) - 1] = '\xff';
 		buf[strlen(command)] = '\0';
-		if (get_entry(bufout, sizeof(bufout), buf) != 0)
+		s = bisect_search(file, file_size, buf);
+		if (!s)
 			continue;
 		spell_check_print_header(command);
-		package = strchrnul(bufout, '\xff');
+		bin = strndupa(s, strcspn(s, "\n") + 1);
+		package = strchrnul(bin, '\xff');
 		*package = '\0'; package++;
 		component = strchrnul(package, '/');
 		if (*component == '/') {
@@ -145,7 +128,7 @@ void spell_check(char *command) {
 			*(component - 1) = '\0';
 			s = "main";
 		}
-		dprintf(2, _(" Command '%s' from package '%s' (%s)"), bufout, package, s);
+		dprintf(2, _(" Command '%s' from package '%s' (%s)"), bin, package, s);
 		dprintf(2, "\n");
 	}
 	/* transposes */
@@ -156,10 +139,12 @@ void spell_check(char *command) {
 
 		buf[strlen(command)] = '\xff';
 		buf[strlen(command) + 1] = '\0';
-		if (get_entry(bufout, sizeof(bufout), buf) != 0)
+		s = bisect_search(file, file_size, buf);
+		if (!s)
 			continue;
 		spell_check_print_header(command);
-		package = strchrnul(bufout, '\xff');
+		bin = strndupa(s, strcspn(s, "\n") + 1);
+		package = strchrnul(bin, '\xff');
 		*package = '\0'; package++;
 		component = strchrnul(package, '/');
 		if (*component == '/') {
@@ -172,7 +157,7 @@ void spell_check(char *command) {
 			*(component - 1) = '\0';
 			s = "main";
 		}
-		dprintf(2, _(" Command '%s' from package '%s' (%s)"), bufout, package, s);
+		dprintf(2, _(" Command '%s' from package '%s' (%s)"), bin, package, s);
 		dprintf(2, "\n");
 	}
 	/* replaces */
@@ -183,10 +168,13 @@ void spell_check(char *command) {
 			memcpy(buf + i + 1, command + i + 1, strlen(command) - i - 1);
 			buf[strlen(command)] = '\xff';
 			buf[strlen(command) + 1] = '\0';
-			if (get_entry(bufout, sizeof(bufout), buf) != 0)
+			bisect_search(file, file_size, buf);
+			s = bisect_search(file, file_size, buf);
+			if (!s)
 				continue;
 			spell_check_print_header(command);
-			package = strchrnul(bufout, '\xff');
+			bin = strndupa(s, strcspn(s, "\n") + 1);
+			package = strchrnul(bin, '\xff');
 			*package = '\0'; package++;
 			component = strchrnul(package, '/');
 			if (*component == '/') {
@@ -199,7 +187,7 @@ void spell_check(char *command) {
 				*(component - 1) = '\0';
 				s = "main";
 			}
-			dprintf(2, _(" Command '%s' from package '%s' (%s)"), bufout, package, s);
+			dprintf(2, _(" Command '%s' from package '%s' (%s)"), bin, package, s);
 			dprintf(2, "\n");
 		}
 	}
@@ -211,10 +199,12 @@ void spell_check(char *command) {
 			memcpy(buf + i + 1, command + i, strlen(command) - i);
 			buf[strlen(command) + 1] = '\xff';
 			buf[strlen(command) + 2] = '\0';
-			if (get_entry(bufout, sizeof(bufout), buf) != 0)
+			s = bisect_search(file, file_size, buf);
+			if (!s)
 				continue;
 			spell_check_print_header(command);
-			package = strchrnul(bufout, '\xff');
+			bin = strndupa(s, strcspn(s, "\n") + 1);
+			package = strchrnul(bin, '\xff');
 			*package = '\0'; package++;
 			component = strchrnul(package, '/');
 			if (*component == '/') {
@@ -227,7 +217,7 @@ void spell_check(char *command) {
 				*(component - 1) = '\0';
 				s = "main";
 			}
-			dprintf(2, _(" Command '%s' from package '%s' (%s)"), bufout, package, s);
+			dprintf(2, _(" Command '%s' from package '%s' (%s)"), bin, package, s);
 			dprintf(2, "\n");
 		}
 	}
@@ -284,7 +274,7 @@ int main(int argc, char *argv[]) {
 	___cleanup_free_ char *v = NULL, *sources_list = NULL;
 	size_t sz;
 	int fd = -1;
-	char buf[8192], buf2[4096], *package, **z, *s, *t, *component;
+	char buf2[4096], *bin, *package, **z, *s, *t, *component;
 	char **prefixes = STRV_MAKE("/usr/bin/", "/usr/sbin/", "/bin/", "/sbin/",
 			"/usr/local/bin/", "/usr/games/", NULL);
 
@@ -363,15 +353,13 @@ int main(int argc, char *argv[]) {
 	sz = snprintf(buf2, sizeof(buf2), "%s\xff", arg_command);
 	if (sz <= 0)
 		goto fail;
-	r = get_entry(buf, sizeof(buf), buf2);
-	if (r < 0) {
-		if (r == -ENOENT) {
-			spell_check(arg_command);
-			goto bail;
-		} else
-			goto fail;
+	s = bisect_search(file, file_size, buf2);
+	if (!s) {
+		spell_check(arg_command);
+		goto bail;
 	}
-	package = strchr(buf, '\xff');
+	bin = strndupa(s, strcspn(s, "\n") + 1);
+	package = strchr(bin, '\xff');
 	if (!package)
 		goto bail;
 	package++;
