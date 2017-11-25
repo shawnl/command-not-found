@@ -17,21 +17,21 @@
  */
 #define _GNU_SOURCE
 #include <errno.h>
+#include <fcntl.h>
 #include <getopt.h>
 #include <grp.h>
 #include <libintl.h>
-#include <sys/types.h>
+#include <locale.h>
+#include <stdbool.h>
+#include <stddef.h>
 #include <stdint.h>
 #include <stdio.h>
-#include <string.h>
-#include <stddef.h>
 #include <stdlib.h>
-#include <unistd.h>
-#include <stdbool.h>
+#include <string.h>
 #include <sys/mman.h>
 #include <sys/stat.h>
-#include <fcntl.h>
-#include <locale.h>
+#include <sys/types.h>
+#include <unistd.h>
 #define _ gettext
 
 #include "command-not-found.h"

@@ -4,16 +4,16 @@
  */
 
 #define _GNU_SOURCE
-#include <stdio.h>
-#include <stdint.h>
-#include <sys/types.h>
-#include <sys/stat.h>
-#include <fcntl.h>
-#include <sys/mman.h>
-#include <stdlib.h>
-#include <stdbool.h>
 #include <assert.h>
+#include <fcntl.h>
+#include <stdbool.h>
+#include <stdint.h>
+#include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
+#include <sys/mman.h>
+#include <sys/stat.h>
+#include <sys/types.h>
 
 /* Returns the file offset of the line starting at ofs, or if no line
  * starts their, then the the offset of the next line.
