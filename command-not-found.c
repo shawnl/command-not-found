@@ -317,9 +317,8 @@ int main(int argc, char *argv[]) {
 "located because '%s' is not included in the PATH environment variable."), s);
 			fputc('\n', stderr);
 			if (strcmp(s + strlen(s) - 5, "sbin/") == 0) {
-			/* keeping this spelling error as all the translations depend on this key*/
 				fprintf(stderr, _("This is most likely caused by the"\
-" lack of administrative priviledges associated with your user account."));
+" lack of administrative privileges associated with your user account."));
 				fputc('\n', stderr);
 			}
 			return EXIT_SUCCESS;

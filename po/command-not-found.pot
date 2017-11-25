@@ -37,7 +37,7 @@ msgstr ""
 
 #: ../command-not-found.c:330
 msgid ""
-"This is most likely caused by the lack of administrative priviledges "
+"This is most likely caused by the lack of administrative privileges "
 "associated with your user account."
 msgstr ""
 
