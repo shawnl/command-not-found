@@ -98,7 +98,7 @@ void spell_check_print_header(char *command) {
  */
 void spell_check(char *command) {
 	char alphabet[] = "abcdefghijklmnopqrstuvwxyz-_";
-	char *buf, *component, *bin, *package, *s, *d;
+	char *buf, *component, *bin, *package, *s;
 
 	buf = alloca(strlen(command) + 2);
 
@@ -272,7 +272,7 @@ static int parse_argv(int argc, char *argv[]) {
 }
 
 int main(int argc, char *argv[]) {
-	int r, r2;
+	int r;
 	___cleanup_free_ char *v = NULL, *sources_list = NULL;
 	size_t sz;
 	int fd = -1;
