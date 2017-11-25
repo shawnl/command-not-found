@@ -232,6 +232,7 @@ int main(int argc, char *argv[]) {
 	char **prefixes = STRV_MAKE("/usr/bin/", "/usr/sbin/", "/bin/", "/sbin/",
 			"/usr/local/bin/", "/usr/games/", NULL);
 	struct stat st;
+	bool is_main = false;
 
 	/* run this early to prime the common case. */
 	fd = open("/var/cache/command-not-found/db", O_RDONLY);
@@ -323,6 +324,7 @@ int main(int argc, char *argv[]) {
 	if (*component != '/') {
 		*(component -1 ) = '\0';
 		component = "main";
+		is_main = true;
 	} else {
 		*component++ = '\0';
 		*strchrnul(component, '\n') = '\0';
@@ -330,10 +332,18 @@ int main(int argc, char *argv[]) {
 	fprintf(stderr, _("The program '%s' is currently not installed. "), arg_command);
 	if (is_root()) {
 		fprintf(stderr, _("You can install it by typing:"));
+#ifdef HAVE_RPM
+		fprintf(stderr, "\ndnf install %s\n", package);
+#else
 		fprintf(stderr, "\napt install %s\n", package);
+#endif
 	} else if (can_sudo() == 0) {
 		fprintf(stderr, _("You can install it by typing:"));
+#ifdef HAVE_RPM
+		fprintf(stderr, "\nsudo dnf install %s\n", package);
+#else
 		fprintf(stderr, "\nsudo apt install %s\n", package);
+#endif
 	} else {
 		fprintf(stderr, _("To run '%s' please ask your "
 			"administrator to install the package '%s'"),
@@ -341,6 +351,8 @@ int main(int argc, char *argv[]) {
 		fputc('\n', stderr);
 	}
 
+	if (is_main)
+		goto success;
 
 	s = strv_find_prefix((char **)components, component);
 	if (!s)
