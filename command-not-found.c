@@ -71,7 +71,7 @@ bool is_root() {
 	return (geteuid() == 0);
 }
 
-void spell_check_print_header(char *command) {
+void spell_check_print_suggestion(char *command, char *bin, char *package, char *s) {
 	static bool printed_header = false;
 
 	if (printed_header == false) {
@@ -79,6 +79,32 @@ void spell_check_print_header(char *command) {
 		fputc('\n', stderr);
 		printed_header = true;
 	}
+
+	fprintf(stderr, _(" Command '%s' from package '%s' (%s)"), bin, package, s);
+	fputc('\n', stderr);
+}
+
+void spell_check_suggestion_search(char *command, char *buf) {
+	char *component, *bin, *package, *s;
+
+	s = bisect_search(file, file_size, buf);
+	if (!s)
+		return;
+	bin = strndupa(s, strchrnul(s, '\n') - s + 1);
+	package = strchrnul(bin, '\xff');
+	*package = '\0'; package++;
+	component = strchrnul(package, '/');
+	if (*component == '/') {
+		*strchrnul(component, '\n') = '\0';
+		*component++ = '\0';
+		s = strv_find_prefix((char **)components, component);
+		if (!s)
+			return;
+	} else {
+		*(component - 1) = '\0';
+		s = "main";
+	}
+	spell_check_print_suggestion(command, bin, package, s);
 }
 
 /*def similar_words(word):
@@ -98,9 +124,7 @@ void spell_check_print_header(char *command) {
  */
 void spell_check(char *command) {
 	char alphabet[] = "abcdefghijklmnopqrstuvwxyz-_";
-	char *buf, *component, *bin, *package, *s;
-
-	buf = alloca(strlen(command) + 2);
+	char *buf = alloca(strlen(command) + 2);
 
 	if (strlen(command) < 4)
 		return;
@@ -112,26 +136,7 @@ void spell_check(char *command) {
 		memcpy(buf + i, command + i + 1, strlen(command) - (i + 1));
 		buf[strlen(command) - 1] = '\xff';
 		buf[strlen(command)] = '\0';
-		s = bisect_search(file, file_size, buf);
-		if (!s)
-			continue;
-		spell_check_print_header(command);
-		bin = strndupa(s, strchrnul(s, '\n') - s + 1);
-		package = strchrnul(bin, '\xff');
-		*package = '\0'; package++;
-		component = strchrnul(package, '/');
-		if (*component == '/') {
-			*strchrnul(component, '\n') = '\0';
-			*component++ = '\0';
-			s = strv_find_prefix((char **)components, component);
-			if (!s)
-				continue;
-		} else {
-			*(component - 1) = '\0';
-			s = "main";
-		}
-		fprintf(stderr, _(" Command '%s' from package '%s' (%s)"), bin, package, s);
-		fputc('\n', stderr);
+		spell_check_suggestion_search(command, buf);
 	}
 	/* transposes */
 	for (int i = 0; i < (strlen(command) - 1); i++) {
@@ -141,26 +146,7 @@ void spell_check(char *command) {
 
 		buf[strlen(command)] = '\xff';
 		buf[strlen(command) + 1] = '\0';
-		s = bisect_search(file, file_size, buf);
-		if (!s)
-			continue;
-		spell_check_print_header(command);
-		bin = strndupa(s, strchrnul(s, '\n') - s + 1);
-		package = strchrnul(bin, '\xff');
-		*package = '\0'; package++;
-		component = strchrnul(package, '/');
-		if (*component == '/') {
-			*strchrnul(component, '\n') = '\0';
-			*component++ = '\0';
-			s = strv_find_prefix((char **)components, component);
-			if (!s)
-				continue;
-		} else {
-			*(component - 1) = '\0';
-			s = "main";
-		}
-		fprintf(stderr, _(" Command '%s' from package '%s' (%s)"), bin, package, s);
-		fputc('\n', stderr);
+		spell_check_suggestion_search(command, buf);
 	}
 	/* replaces */
 	for (int i = 0; i < strlen(command); i++) {
@@ -170,27 +156,7 @@ void spell_check(char *command) {
 			memcpy(buf + i + 1, command + i + 1, strlen(command) - i - 1);
 			buf[strlen(command)] = '\xff';
 			buf[strlen(command) + 1] = '\0';
-			bisect_search(file, file_size, buf);
-			s = bisect_search(file, file_size, buf);
-			if (!s)
-				continue;
-			spell_check_print_header(command);
-			bin = strndupa(s, strchrnul(s, '\n') - s + 1);
-			package = strchrnul(bin, '\xff');
-			*package = '\0'; package++;
-			component = strchrnul(package, '/');
-			if (*component == '/') {
-				*strchrnul(component, '\n') = '\0';
-				*component++ = '\0';
-				s = strv_find_prefix((char **)components, component);
-				if (!s)
-					continue;
-			} else {
-				*(component - 1) = '\0';
-				s = "main";
-			}
-			fprintf(stderr, _(" Command '%s' from package '%s' (%s)"), bin, package, s);
-			fputc('\n', stderr);
+			spell_check_suggestion_search(command, buf);
 		}
 	}
 	/* inserts */
@@ -201,26 +167,7 @@ void spell_check(char *command) {
 			memcpy(buf + i + 1, command + i, strlen(command) - i);
 			buf[strlen(command) + 1] = '\xff';
 			buf[strlen(command) + 2] = '\0';
-			s = bisect_search(file, file_size, buf);
-			if (!s)
-				continue;
-			spell_check_print_header(command);
-			bin = strndupa(s, strchrnul(s, '\n') - s + 1);
-			package = strchrnul(bin, '\xff');
-			*package = '\0'; package++;
-			component = strchrnul(package, '/');
-			if (*component == '/') {
-				*strchrnul(component, '\n') = '\0';
-				*component++ = '\0';
-				s = strv_find_prefix((char **)components, component);
-				if (!s)
-					continue;
-			} else {
-				*(component - 1) = '\0';
-				s = "main";
-			}
-			fprintf(stderr, _(" Command '%s' from package '%s' (%s)"), bin, package, s);
-			fputc('\n', stderr);
+			spell_check_suggestion_search(command, buf);
 		}
 	}
 }
