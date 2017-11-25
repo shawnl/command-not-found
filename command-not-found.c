@@ -75,8 +75,8 @@ void spell_check_print_header(char *command) {
 	static bool printed_header = false;
 
 	if (printed_header == false) {
-		dprintf(2, _("No command '%s' found, did you mean:"), command);
-		dprintf(2, "\n");
+		fprintf(stderr, _("No command '%s' found, did you mean:"), command);
+		fputc('\n', stderr);
 		printed_header = true;
 	}
 }
@@ -128,8 +128,8 @@ void spell_check(char *command) {
 			*(component - 1) = '\0';
 			s = "main";
 		}
-		dprintf(2, _(" Command '%s' from package '%s' (%s)"), bin, package, s);
-		dprintf(2, "\n");
+		fprintf(stderr, _(" Command '%s' from package '%s' (%s)"), bin, package, s);
+		fputc('\n', stderr);
 	}
 	/* transposes */
 	for (int i = 0; i < (strlen(command) - 1); i++) {
@@ -157,8 +157,8 @@ void spell_check(char *command) {
 			*(component - 1) = '\0';
 			s = "main";
 		}
-		dprintf(2, _(" Command '%s' from package '%s' (%s)"), bin, package, s);
-		dprintf(2, "\n");
+		fprintf(stderr, _(" Command '%s' from package '%s' (%s)"), bin, package, s);
+		fputc('\n', stderr);
 	}
 	/* replaces */
 	for (int i = 0; i < strlen(command); i++) {
@@ -187,8 +187,8 @@ void spell_check(char *command) {
 				*(component - 1) = '\0';
 				s = "main";
 			}
-			dprintf(2, _(" Command '%s' from package '%s' (%s)"), bin, package, s);
-			dprintf(2, "\n");
+			fprintf(stderr, _(" Command '%s' from package '%s' (%s)"), bin, package, s);
+			fputc('\n', stderr);
 		}
 	}
 	/* inserts */
@@ -217,8 +217,8 @@ void spell_check(char *command) {
 				*(component - 1) = '\0';
 				s = "main";
 			}
-			dprintf(2, _(" Command '%s' from package '%s' (%s)"), bin, package, s);
-			dprintf(2, "\n");
+			fprintf(stderr, _(" Command '%s' from package '%s' (%s)"), bin, package, s);
+			fputc('\n', stderr);
 		}
 	}
 }
@@ -313,14 +313,14 @@ int main(int argc, char *argv[]) {
 			r = strncmp(path, s, strlen(s));
 			if (r != 0)
 				continue;
-			dprintf(2, _("The command could not be "\
+			fprintf(stderr, _("The command could not be "\
 "located because '%s' is not included in the PATH environment variable."), s);
-			dprintf(2, "\n");
+			fputc('\n', stderr);
 			if (strcmp(s + strlen(s) - 5, "sbin/") == 0) {
 			/* keeping this spelling error as all the translations depend on this key*/
-				dprintf(2, _("This is most likely caused by the"\
+				fprintf(stderr, _("This is most likely caused by the"\
 " lack of administrative priviledges associated with your user account."));
-				dprintf(2, "\n");
+				fputc('\n', stderr);
 			}
 			return EXIT_SUCCESS;
 		} while ((path = strchrnul(path, ':') + 1));
@@ -328,15 +328,15 @@ int main(int argc, char *argv[]) {
 		if (arg_ignore_installed)
 			break;
 
-		dprintf(2, _("Command '%s' is available in '%s'"), arg_command,
+		fprintf(stderr, _("Command '%s' is available in '%s'"), arg_command,
 			w);
-		dprintf(2, "\n");
+		fputc('\n', stderr);
 		return EXIT_SUCCESS;
 	}
 
 	if (fd < 0) {
 		if (errno == ENOENT)
-			dprintf(2, _("%s not found. "
+			fprintf(stderr, _("%s not found. "
 				"Run 'update-command-not-found' as root.\n"),
 				"/var/cache/command-not-found/db");
 		goto fail;
@@ -371,18 +371,18 @@ int main(int argc, char *argv[]) {
 		*component++ = '\0';
 		*strchrnul(component, '\n') = '\0';
 	}
-	dprintf(2, _("The program '%s' is currently not installed. "), arg_command);
+	fprintf(stderr, _("The program '%s' is currently not installed. "), arg_command);
 	if (is_root()) {
-		dprintf(2, _("You can install it by typing:"));
-		dprintf(2, "\napt install %s\n", package);
+		fprintf(stderr, _("You can install it by typing:"));
+		fprintf(stderr, "\napt install %s\n", package);
 	} else if (can_sudo() == 0) {
-		dprintf(2, _("You can install it by typing:"));
-		dprintf(2, "\nsudo apt install %s\n", package);
+		fprintf(stderr, _("You can install it by typing:"));
+		fprintf(stderr, "\nsudo apt install %s\n", package);
 	} else {
-		dprintf(2, _("To run '%s' please ask your "
+		fprintf(stderr, _("To run '%s' please ask your "
 			"administrator to install the package '%s'"),
 			arg_command, package);
-		dprintf(2, "\n");
+		fputc('\n', stderr);
 	}
 
 
@@ -407,9 +407,9 @@ int main(int argc, char *argv[]) {
 	/* commented out */
 	if (strrchr(sources_list, '#') > strrchr(sources_list, '\n')) {
 component_print:
-		dprintf(2, _("You will have to enable "\
+		fprintf(stderr, _("You will have to enable "\
 				"the component called '%s'"), s);
-		dprintf(2, "\n");
+		fputc('\n', stderr);
 	}
 success:
 	return EXIT_SUCCESS;
@@ -418,8 +418,8 @@ fail:
 	fputc('\n', stderr);
 	return EXIT_FAILURE;
 bail:
-	dprintf(2, _("%s: command not found"), arg_command);
-	dprintf(2, "\n");
+	fprintf(stderr, _("%s: command not found"), arg_command);
+	fputc('\n', stderr);
 	return EXIT_SUCCESS;
 }
 
