@@ -116,7 +116,7 @@ void spell_check(char *command) {
 		if (!s)
 			continue;
 		spell_check_print_header(command);
-		bin = strndupa(s, strcspn(s, "\n") + 1);
+		bin = strndupa(s, strchrnul(s, '\n') - s + 1);
 		package = strchrnul(bin, '\xff');
 		*package = '\0'; package++;
 		component = strchrnul(package, '/');
@@ -145,7 +145,7 @@ void spell_check(char *command) {
 		if (!s)
 			continue;
 		spell_check_print_header(command);
-		bin = strndupa(s, strcspn(s, "\n") + 1);
+		bin = strndupa(s, strchrnul(s, '\n') - s + 1);
 		package = strchrnul(bin, '\xff');
 		*package = '\0'; package++;
 		component = strchrnul(package, '/');
@@ -175,7 +175,7 @@ void spell_check(char *command) {
 			if (!s)
 				continue;
 			spell_check_print_header(command);
-			bin = strndupa(s, strcspn(s, "\n") + 1);
+			bin = strndupa(s, strchrnul(s, '\n') - s + 1);
 			package = strchrnul(bin, '\xff');
 			*package = '\0'; package++;
 			component = strchrnul(package, '/');
@@ -205,7 +205,7 @@ void spell_check(char *command) {
 			if (!s)
 				continue;
 			spell_check_print_header(command);
-			bin = strndupa(s, strcspn(s, "\n") + 1);
+			bin = strndupa(s, strchrnul(s, '\n') - s + 1);
 			package = strchrnul(bin, '\xff');
 			*package = '\0'; package++;
 			component = strchrnul(package, '/');
@@ -350,6 +350,9 @@ int main(int argc, char *argv[]) {
 	file_size = st.st_size;
 	file = mmap(NULL, file_size, PROT_READ, MAP_SHARED, fd, 0);
 
+	// linux/binfmts.h:
+	// #define MAX_ARG_STRLEN (PAGE_SIZE * 32)
+	// so this will not overflow the stack
 	command_ff = alloca(strlen(arg_command) + 2);
 	strcpy(command_ff, arg_command);
 	command_ff[strlen(arg_command)] = '\xff';
@@ -359,7 +362,7 @@ int main(int argc, char *argv[]) {
 		spell_check(arg_command);
 		goto bail;
 	}
-	bin = strndupa(s, strcspn(s, "\n") + 1);
+	bin = strndupa(s, strchrnul(s, '\n') - s + 1);
 	package = strchr(bin, '\xff');
 	if (!package)
 		goto bail;
