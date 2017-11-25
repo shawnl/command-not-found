@@ -1,19 +1,19 @@
 #define _GNU_SOURCE
-#include <stdio.h>
-#include <stdlib.h>
-#include <stdint.h>
-#include <string.h>
-#include <errno.h>
-#include <stdbool.h>
 #include <assert.h>
-#include <unistd.h>
+#include <errno.h>
 #include <libintl.h>
 #include <locale.h>
+#include <stdbool.h>
+#include <stdint.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <unistd.h>
 #define _ gettext
 
 #include "rb.h"
-#include "util.h"
 #include "update-command-not-found.h"
+#include "util.h"
 
 static int collect_contents(struct rb_root *t_bin) {
 	___cleanup_(fclosep) FILE *contents_cat = NULL, *apt;
