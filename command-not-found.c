@@ -48,21 +48,30 @@ static const char *components[] = {"contrib", "non-free", "universe",
 		"multiverse", "restricted", NULL};
 
 int can_sudo() {
-	struct group *adm, *sudo;
+	struct group *grp;
+	gid_t adm, sudo, wheel;
 	gid_t mygroups[1024];
 	int r;
 
-	adm = getgrnam("adm");
-	sudo = getgrnam("sudo");
-	if (!adm || !sudo)
-		return -errno;
+	grp = getgrnam("adm");
+	if (grp)
+		adm = grp->gr_gid;
+	grp = getgrnam("sudo");
+	if (grp)
+		sudo = grp->gr_gid;
+	grp = getgrnam("wheel");
+	if (grp)
+		wheel = grp->gr_gid;
 	r = getgroups(sizeof(mygroups) / sizeof(gid_t), mygroups);
 	if (r < 0)
 		return -errno;
 
-	for (int i = 0; i < r; i++)
-		if (mygroups[i] == adm->gr_gid || mygroups[i] == sudo->gr_gid)
+	for (int i = 0; i < r; i++) {
+		if (	(mygroups[i] == adm) ||
+			(mygroups[i] == sudo) ||
+			(mygroups[i] == wheel))
 			return 0;
+	}
 
 	return -ENOENT;
 }
