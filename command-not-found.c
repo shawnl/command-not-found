@@ -98,9 +98,11 @@ void spell_check_print_header(char *command) {
  */
 void spell_check(char *command) {
 	char alphabet[] = "abcdefghijklmnopqrstuvwxyz-_";
-	char buf[4096], *component, *bin, *package, *s, *d;
+	char *buf, *component, *bin, *package, *s, *d;
 
-	if (strlen(command) < 4 || strlen(command) >= sizeof(buf) - 2)
+	buf = alloca(strlen(command) + 2);
+
+	if (strlen(command) < 4)
 		return;
 	/* deletes */
 	for (int i = 0; i < strlen(command); i++) {
@@ -274,9 +276,10 @@ int main(int argc, char *argv[]) {
 	___cleanup_free_ char *v = NULL, *sources_list = NULL;
 	size_t sz;
 	int fd = -1;
-	char buf2[4096], *bin, *package, **z, *s, *t, *component;
+	char *command_ff, *bin, *package, **z, *s, *t, *component;
 	char **prefixes = STRV_MAKE("/usr/bin/", "/usr/sbin/", "/bin/", "/sbin/",
 			"/usr/local/bin/", "/usr/games/", NULL);
+	struct stat st;
 
 	/* run this early to prime the common case. */
 	fd = open("/var/cache/command-not-found/db", O_RDONLY);
@@ -341,18 +344,17 @@ int main(int argc, char *argv[]) {
 		goto fail;
 	}
 
-	struct stat st;
-
 	r = fstat(fd, &st);
 	if (r < 0)
 		abort();
 	file_size = st.st_size;
 	file = mmap(NULL, file_size, PROT_READ, MAP_SHARED, fd, 0);
 
-	sz = snprintf(buf2, sizeof(buf2), "%s\xff", arg_command);
-	if (sz <= 0)
-		goto fail;
-	s = bisect_search(file, file_size, buf2);
+	command_ff = alloca(strlen(arg_command) + 2);
+	strcpy(command_ff, arg_command);
+	command_ff[strlen(arg_command)] = '\xff';
+	command_ff[strlen(arg_command) + 1] = '\0';
+	s = bisect_search(file, file_size, command_ff);
 	if (!s) {
 		spell_check(arg_command);
 		goto bail;
