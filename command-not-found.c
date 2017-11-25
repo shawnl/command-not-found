@@ -192,7 +192,7 @@ void spell_check(char *command) {
 		}
 	}
 	/* inserts */
-	for (int i = 0; i <= strlen(command) - 1; i++) {
+	for (int i = 0; i <= strlen(command); i++) {
 		for (int j = 0; j < strlen(alphabet); j++) {
 			memcpy(buf, command, i);
 			buf[i] = alphabet[j];
