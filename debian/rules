@@ -1,7 +1,3 @@
 #!/usr/bin/make -f
 %:
 	dh $@
-
-override_dh_install:
-	po/install_translations
-	dh_install
