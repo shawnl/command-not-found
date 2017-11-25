@@ -20,10 +20,11 @@ map{|i| /Filename: ([^\n]*)\n/.match(i)[1]}.each { |repo|
 		match = parse.match(line)
 		if match[2].include?('/')
 			component = match[2].split('/')[0]
+	                db << "#{match[1]}\xff#{match[3].chomp}/#{component.byteslice(0,1)}"
 		else
 			component = "main"
+	                db << "#{match[1]}\xff#{match[3].chomp}"
 		end
-		db << "#{match[1]}\xff#{match[3].chomp}/#{component.byteslice(0,2)}"
 	}
 }
 db.sort!
