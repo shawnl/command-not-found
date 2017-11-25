@@ -71,7 +71,7 @@ bool is_root() {
 	return (geteuid() == 0);
 }
 
-void spell_check_print_header(char *command) {
+void spell_check_print_suggestion(char *command, char *bin, char *package, char *s) {
 	static bool printed_header = false;
 
 	if (printed_header == false) {
@@ -79,6 +79,9 @@ void spell_check_print_header(char *command) {
 		fputc('\n', stderr);
 		printed_header = true;
 	}
+
+	fprintf(stderr, _(" Command '%s' from package '%s' (%s)"), bin, package, s);
+	fputc('\n', stderr);
 }
 
 /*def similar_words(word):
@@ -115,7 +118,6 @@ void spell_check(char *command) {
 		s = bisect_search(file, file_size, buf);
 		if (!s)
 			continue;
-		spell_check_print_header(command);
 		bin = strndupa(s, strchrnul(s, '\n') - s + 1);
 		package = strchrnul(bin, '\xff');
 		*package = '\0'; package++;
@@ -130,8 +132,7 @@ void spell_check(char *command) {
 			*(component - 1) = '\0';
 			s = "main";
 		}
-		fprintf(stderr, _(" Command '%s' from package '%s' (%s)"), bin, package, s);
-		fputc('\n', stderr);
+	    	spell_check_print_suggestion(command, bin, package, s);
 	}
 	/* transposes */
 	for (int i = 0; i < (strlen(command) - 1); i++) {
@@ -144,7 +145,6 @@ void spell_check(char *command) {
 		s = bisect_search(file, file_size, buf);
 		if (!s)
 			continue;
-		spell_check_print_header(command);
 		bin = strndupa(s, strchrnul(s, '\n') - s + 1);
 		package = strchrnul(bin, '\xff');
 		*package = '\0'; package++;
@@ -159,8 +159,7 @@ void spell_check(char *command) {
 			*(component - 1) = '\0';
 			s = "main";
 		}
-		fprintf(stderr, _(" Command '%s' from package '%s' (%s)"), bin, package, s);
-		fputc('\n', stderr);
+	    	spell_check_print_suggestion(command, bin, package, s);
 	}
 	/* replaces */
 	for (int i = 0; i < strlen(command); i++) {
@@ -174,7 +173,6 @@ void spell_check(char *command) {
 			s = bisect_search(file, file_size, buf);
 			if (!s)
 				continue;
-			spell_check_print_header(command);
 			bin = strndupa(s, strchrnul(s, '\n') - s + 1);
 			package = strchrnul(bin, '\xff');
 			*package = '\0'; package++;
@@ -189,8 +187,7 @@ void spell_check(char *command) {
 				*(component - 1) = '\0';
 				s = "main";
 			}
-			fprintf(stderr, _(" Command '%s' from package '%s' (%s)"), bin, package, s);
-			fputc('\n', stderr);
+	    		spell_check_print_suggestion(command, bin, package, s);
 		}
 	}
 	/* inserts */
@@ -204,7 +201,6 @@ void spell_check(char *command) {
 			s = bisect_search(file, file_size, buf);
 			if (!s)
 				continue;
-			spell_check_print_header(command);
 			bin = strndupa(s, strchrnul(s, '\n') - s + 1);
 			package = strchrnul(bin, '\xff');
 			*package = '\0'; package++;
@@ -219,8 +215,7 @@ void spell_check(char *command) {
 				*(component - 1) = '\0';
 				s = "main";
 			}
-			fprintf(stderr, _(" Command '%s' from package '%s' (%s)"), bin, package, s);
-			fputc('\n', stderr);
+	    		spell_check_print_suggestion(command, bin, package, s);
 		}
 	}
 }
