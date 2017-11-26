@@ -103,7 +103,7 @@ static int collect_contents(struct rb_root *t_bin) {
 		} else
 			t2 = strchr(t + 1, '/');
 		if (t2 && strchr(t2 + 1, '/')) {
-			t2 = '\0';
+			t2[0] = '\0';
 			cmn = t + strspn(t, " \t");
 			got_component = true;
 		}
