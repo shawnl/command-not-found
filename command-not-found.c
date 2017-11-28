@@ -225,7 +225,7 @@ static int parse_argv(int argc, char *argv[]) {
 
 int main(int argc, char *argv[]) {
 	int r;
-	___cleanup_free_ char *v = NULL, *sources_list = NULL;
+	___cleanup_free_ *sources_list = NULL;
 	size_t sz;
 	int fd = -1;
 	char *command_ff, *bin, *package, **z, *s, *t, *component;
