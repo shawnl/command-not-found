@@ -6,6 +6,8 @@ project('command-not-found', 'c',
                 'prefix=/usr',
 	],
 )
+
+add_project_arguments('-fPIE', language : 'c')
 executable('command-not-found', 'command-not-found.c', 'command-not-found.h',
 	'util.c', 'util.h', 'bisect.c', 'bisect.h', install: true, install_dir : 'lib')
 executable('update-command-not-found', 'update-command-not-found.c', 'update-command-not-found.h',
