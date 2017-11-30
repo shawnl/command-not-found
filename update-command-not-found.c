@@ -16,9 +16,9 @@
 #include "util.h"
 
 static int collect_contents(struct rb_root *t_bin) {
-	___cleanup_(fclosep) FILE *contents_cat = NULL, *apt;
+	__attribute__((cleanup(fclosep))) FILE *contents_cat = NULL, *apt;
 	char buf[8192], *bin, *pkg, *cmn, *t, *t2, *t3;
-	___cleanup_(freep) char *indextargets = NULL, *contents = NULL,
+	__attribute__((cleanup(freep))) char *indextargets = NULL, *contents = NULL,
 		*popens = NULL;
 	int r;
 
@@ -157,7 +157,7 @@ int main(int argc, char *argv[]) {
 	struct binary *b;
 	struct rb_node *n;
 	int r;
-	___cleanup_(fclosep) FILE *db = NULL;
+	__attribute__((cleanup(fclosep))) FILE *db = NULL;
 
 	setlocale(LC_ALL, "");
 	bindtextdomain(PACKAGE, LOCALEDIR);

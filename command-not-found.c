@@ -225,7 +225,7 @@ static int parse_argv(int argc, char *argv[]) {
 
 int main(int argc, char *argv[]) {
 	int r;
-	___cleanup_free_ *sources_list = NULL;
+	__attribute__((cleanup(freep))) char *sources_list = NULL;
 	size_t sz;
 	int fd = -1;
 	char *command_ff, *bin, *package, **z, *s, *t, *component;
@@ -251,7 +251,7 @@ int main(int argc, char *argv[]) {
 	}
 
 	STRV_FOREACH(z, prefixes) {
-		___cleanup_free_ char *w = NULL;
+		__attribute__((cleanup(freep))) char *w = NULL;
 		char *path;
 
 		s = *z;
