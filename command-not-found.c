@@ -229,8 +229,8 @@ int main(int argc, char *argv[]) {
 	size_t sz;
 	int fd = -1;
 	char *command_ff, *bin, *package, **z, *s, *t, *component;
-	char **prefixes = STRV_MAKE("/usr/bin/", "/usr/sbin/", "/bin/", "/sbin/",
-			"/usr/local/bin/", "/usr/games/", NULL);
+	char **prefixes = STRV_MAKE("/usr/bin", "/usr/sbin", "/bin", "/sbin",
+			"/usr/local/bin", "/usr/games", NULL);
 	struct stat st;
 	bool is_main = false;
 
@@ -251,12 +251,13 @@ int main(int argc, char *argv[]) {
 	}
 
 	STRV_FOREACH(z, prefixes) {
-		Cleanup(freep) char *w = NULL;
+		char w[strlen(*z) + 1 + strlen(arg_command) + 1];
 		char *path;
+		bool got_path = false;
 
 		s = *z;
 
-		r = asprintf(&w, "%s%s", s, arg_command);
+		r = snprintf(w, sizeof(w) + 1, "%s/%s", s, arg_command);
 		if (r < 0)
 			goto fail;
 		r = access(w, X_OK);
@@ -267,18 +268,20 @@ int main(int argc, char *argv[]) {
 			if (*path == '\0')
 				break;
 			r = strncmp(path, s, strlen(s));
-			if (r != 0)
-				continue;
+			if (r == 0 && path[strlen(s) + 1] != ':')
+				got_path = true;
+		} while ((path = strchrnul(path, ':') + 1));
+		if (!got_path) {
 			fprintf(stderr, _("The command could not be "\
 "located because '%s' is not included in the PATH environment variable."), s);
 			fputc('\n', stderr);
-			if (strcmp(s + strlen(s) - 5, "sbin/") == 0) {
+			if (strcmp(s + strlen(s) - 5, "sbin") == 0) {
 				fprintf(stderr, _("This is most likely caused by the"\
 " lack of administrative privileges associated with your user account."));
 				fputc('\n', stderr);
 			}
 			return EXIT_SUCCESS;
-		} while ((path = strchrnul(path, ':') + 1));
+		}
 
 		if (arg_ignore_installed)
 			break;
