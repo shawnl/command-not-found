@@ -7,6 +7,8 @@
 #define PACKAGE "command-not-found"
 #define LOCALEDIR "/usr/share/locale"
 
+#define Cleanup(x) __attribute__((cleanup(x)))
+
 #define DEFINE_TRIVIAL_CLEANUP_FUNC(type, func)                                 \
         static inline void func##p(type *p) {                                   \
                 if (*p)                                                         \

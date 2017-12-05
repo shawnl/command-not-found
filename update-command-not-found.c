@@ -32,9 +32,9 @@
 #include "util.h"
 
 static int collect_contents(struct rb_root *t_bin) {
-	__attribute__((cleanup(fclosep))) FILE *contents_cat = NULL, *apt;
+	Cleanup(fclosep) FILE *contents_cat = NULL, *apt;
 	char buf[8192], *bin, *pkg, *cmn, *t, *t2, *t3;
-	__attribute__((cleanup(freep))) char *indextargets = NULL, *contents = NULL,
+	Cleanup(freep) char *indextargets = NULL, *contents = NULL,
 		*popens = NULL;
 	int r;
 
@@ -173,7 +173,7 @@ int main(int argc, char *argv[]) {
 	struct binary *b;
 	struct rb_node *n;
 	int r;
-	__attribute__((cleanup(fclosep))) FILE *db = NULL;
+	Cleanup(fclosep) FILE *db = NULL;
 
 	setlocale(LC_ALL, "");
 	bindtextdomain(PACKAGE, LOCALEDIR);
