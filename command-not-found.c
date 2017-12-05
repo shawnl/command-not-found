@@ -129,7 +129,7 @@ void spell_check_suggestion_search(char *command, char *buf) {
     return set(deletes + transposes + replaces + inserts)*/
 void spell_check(char *command) {
 	char alphabet[] = "abcdefghijklmnopqrstuvwxyz-_";
-	char *buf = alloca(strlen(command) + 2);
+	char buf[strlen(command) + 2];
 
 	if (strlen(command) < 4)
 		return;
