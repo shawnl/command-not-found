@@ -1,8 +1,23 @@
+/* Copyright (C) 2017  Shawn Landden <slandden@gmail.com>
+ *
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public License
+ * as published by the Free Software Foundation; either version 2.1
+ * of the License, or (at your option) any later version.
+
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+ */
 /*
  * Inspired by https://github.com/pts/pts-line-bisect
  * by Péter Szabó <pts@fazekas.hu>
  */
-
 #define _GNU_SOURCE
 #include <assert.h>
 #include <fcntl.h>
@@ -27,7 +42,7 @@ static off_t get_fofs(char *file, size_t size, off_t ofs) {
 	c = memchr(file + ofs, '\n', size - ofs);
 	if (!c)
 		c = memrchr(file + ofs, '\n', ofs);
-    	return c - file + 1;
+	return c - file + 1;
 }
 
 /* Compares x[:xsize] with a line read from yf. */
