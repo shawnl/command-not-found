@@ -364,7 +364,6 @@ int main(int argc, char *argv[]) {
 		goto success;
 
 	// TODO investigate using 'apt-get indextargets' or <apt-pkg/sourcelist.h>
-	// The advantage of this way is that it is much faster.
 	// As long as this catches the default installed ubuntu, and changes via
 	// Software and Updates...
 	sources_fd = open("/etc/apt/sources.list", O_RDONLY);
