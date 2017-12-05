@@ -50,7 +50,7 @@ static const char *components[] = {"contrib", "non-free", "universe",
 int can_sudo() {
 	struct group *grp;
 	gid_t adm, sudo, wheel;
-	gid_t mygroups[1024];
+	gid_t mygroups[8092];
 	int r;
 
 	grp = getgrnam("adm");
