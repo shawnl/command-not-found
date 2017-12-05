@@ -225,10 +225,9 @@ static int parse_argv(int argc, char *argv[]) {
 
 int main(int argc, char *argv[]) {
 	int r;
-	Cleanup(freep) char *sources_list = NULL;
-	size_t sz;
-	int fd = -1;
-	char *command_ff, *bin, *package, **z, *s, *t, *component;
+	int fd = -1, sources_fd = -1;
+	char *command_ff, *bin, *package, **z, *s, *t, *t2, *t3, *component,
+		*sources_list;
 	char **prefixes = STRV_MAKE("/usr/bin", "/usr/sbin", "/bin", "/sbin",
 			"/usr/local/bin", "/usr/games", NULL);
 	struct stat st;
@@ -305,6 +304,9 @@ int main(int argc, char *argv[]) {
 		abort();
 	file_size = st.st_size;
 	file = mmap(NULL, file_size, PROT_READ, MAP_SHARED, fd, 0);
+	if (file == MAP_FAILED)
+		goto fail;
+	close(fd);
 
 	// linux/binfmts.h:
 	// #define MAX_ARG_STRLEN (PAGE_SIZE * 32)
@@ -365,20 +367,33 @@ int main(int argc, char *argv[]) {
 	// The advantage of this way is that it is much faster.
 	// As long as this catches the default installed ubuntu, and changes via
 	// Software and Updates...
-	r = read_full_file("/etc/apt/sources.list", &sources_list, &sz);
+	sources_fd = open("/etc/apt/sources.list", O_RDONLY);
+	if (sources_fd < 0)
+		goto fail;
+	r = fstat(sources_fd, &st);
 	if (r < 0)
 		goto fail;
-	t = strstr(sources_list, s);
-	if (!s)
+	sources_list = mmap(NULL, st.st_size, PROT_READ, MAP_SHARED, fd, 0);
+	if (sources_list == MAP_FAILED)
+		goto fail;
+	close(sources_fd);
+	t = memmem(sources_list, st.st_size, s, strlen(s));
+	if (!t)
 		goto component_print;
 
-	t += strcspn(t, "#\n");
-	if (!s)
+	t2 = memchr(t, '#', st.st_size - (t - sources_list));
+	t3 = memchr(t, '\n', st.st_size - (t - sources_list));
+	if (!t2 && !t3)
 		goto component_print;
-	*t = '\0';
+	else if (!t2)
+		t = t3;
+	else if (!t3)
+		t = t2;
+	else
+		t = MIN(t2, t3);
 
-	/* commented out */
-	if (strrchr(sources_list, '#') > strrchr(sources_list, '\n')) {
+	if (memrchr(sources_list, '#', st.st_size - (t - sources_list)) >
+		memrchr(sources_list, '\n', st.st_size - (t - sources_list))) {
 component_print:
 		fprintf(stderr, _("You will have to enable "\
 				"the component called '%s'"), s);
