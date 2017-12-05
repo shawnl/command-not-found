@@ -196,8 +196,8 @@ int main(int argc, char *argv[]) {
 	}
 	b = rb_entry(n, struct binary, n_bin);
 	do {
-		if (strncmp(b->cmn, "main", strlen("main")) == 0)
-	                fprintf(db, "%s\xff%s\n", b->bin, b->pkg);
+		if (strcmp(b->cmn, "main") == 0)
+			fprintf(db, "%s\xff%s\n", b->bin, b->pkg);
 		else
 			fprintf(db, "%s\xff%s/%c\n", b->bin, b->pkg, b->cmn[0]);
 
