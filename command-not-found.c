@@ -47,9 +47,9 @@ size_t file_size;
 static const char *components[] = {"contrib", "non-free", "universe",
 		"multiverse", "restricted", NULL};
 
-int can_sudo() {
+static int can_sudo() {
 	struct group *grp;
-	gid_t adm, sudo, wheel;
+	gid_t adm = 0, sudo = 0, wheel = 0;
 	gid_t mygroups[8092];
 	int r;
 
@@ -76,11 +76,11 @@ int can_sudo() {
 	return -ENOENT;
 }
 
-bool is_root() {
+static bool is_root() {
 	return (geteuid() == 0);
 }
 
-void spell_check_print_suggestion(char *command, char *bin, char *package, char *s) {
+static void spell_check_print_suggestion(const char *command, char *bin, char *package, char *s) {
 	static bool printed_header = false;
 
 	if (printed_header == false) {
@@ -93,10 +93,10 @@ void spell_check_print_suggestion(char *command, char *bin, char *package, char 
 	fputc('\n', stderr);
 }
 
-void spell_check_suggestion_search(char *command, char *buf) {
+static void spell_check_suggestion_search(const char *command, char *buf, unsigned buf_len) {
 	char *component, *bin, *package, *s;
 
-	s = bisect_search(file, file_size, buf);
+	s = bisect_search(file, file_size, buf, buf_len);
 	if (!s)
 		return;
 	bin = strndupa(s, strchrnul(s, '\n') - s + 1);
@@ -127,7 +127,7 @@ void spell_check_suggestion_search(char *command, char *buf) {
     replaces   = [a + c + b[1:] for a, b in s for c in alphabet if b]
     inserts    = [a + c + b     for a, b in s for c in alphabet]
     return set(deletes + transposes + replaces + inserts)*/
-void spell_check(char *command) {
+static void spell_check(const char *command) {
 	char alphabet[] = "abcdefghijklmnopqrstuvwxyz-_";
 	char buf[strlen(command) + 2];
 
@@ -141,7 +141,7 @@ void spell_check(char *command) {
 		memcpy(buf + i, command + i + 1, strlen(command) - (i + 1));
 		buf[strlen(command) - 1] = '\xff';
 		buf[strlen(command)] = '\0';
-		spell_check_suggestion_search(command, buf);
+		spell_check_suggestion_search(command, buf, strlen(command));
 	}
 	/* transposes */
 	for (int i = 0; i < (strlen(command) - 1); i++) {
@@ -151,7 +151,7 @@ void spell_check(char *command) {
 
 		buf[strlen(command)] = '\xff';
 		buf[strlen(command) + 1] = '\0';
-		spell_check_suggestion_search(command, buf);
+		spell_check_suggestion_search(command, buf, strlen(command));
 	}
 	/* replaces */
 	for (int i = 0; i < strlen(command); i++) {
@@ -161,7 +161,7 @@ void spell_check(char *command) {
 			memcpy(buf + i + 1, command + i + 1, strlen(command) - i - 1);
 			buf[strlen(command)] = '\xff';
 			buf[strlen(command) + 1] = '\0';
-			spell_check_suggestion_search(command, buf);
+			spell_check_suggestion_search(command, buf, strlen(command) + 1);
 		}
 	}
 	/* inserts */
@@ -172,7 +172,7 @@ void spell_check(char *command) {
 			memcpy(buf + i + 1, command + i, strlen(command) - i);
 			buf[strlen(command) + 1] = '\xff';
 			buf[strlen(command) + 2] = '\0';
-			spell_check_suggestion_search(command, buf);
+			spell_check_suggestion_search(command, buf, strlen(command) + 2);
 		}
 	}
 }
@@ -315,7 +315,7 @@ int main(int argc, char *argv[]) {
 	strcpy(command_ff, arg_command);
 	command_ff[strlen(arg_command)] = '\xff';
 	command_ff[strlen(arg_command) + 1] = '\0';
-	s = bisect_search(file, file_size, command_ff);
+	s = bisect_search(file, file_size, command_ff, strlen(arg_command) + 1);
 	if (!s) {
 		spell_check(arg_command);
 		goto bail;
