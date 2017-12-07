@@ -40,8 +40,11 @@ static off_t get_fofs(char *file, size_t size, off_t ofs) {
 	if (ofs > size) return size;
 	--ofs;
 	c = memchr(file + ofs, '\n', size - ofs);
-	if (!c)
+	if (!c) {
 		c = memrchr(file + ofs, '\n', ofs);
+		if (!c)
+			c = file;
+	}
 	return c - file + 1;
 }
 
