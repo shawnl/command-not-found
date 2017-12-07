@@ -19,15 +19,7 @@
  * by Péter Szabó <pts@fazekas.hu>
  */
 #define _GNU_SOURCE
-#include <assert.h>
-#include <fcntl.h>
-#include <stdbool.h>
-#include <stdint.h>
-#include <stdio.h>
-#include <stdlib.h>
 #include <string.h>
-#include <sys/mman.h>
-#include <sys/stat.h>
 #include <sys/types.h>
 
 /* Returns the file offset of the line starting at ofs, or if no line
@@ -35,7 +27,6 @@
  */
 static off_t get_fofs(char *file, size_t size, off_t ofs) {
 	char *c;
-	assert(ofs >= 0);
 	if (ofs == 0) return 0;
 	if (ofs > size) return size;
 	--ofs;
@@ -43,7 +34,7 @@ static off_t get_fofs(char *file, size_t size, off_t ofs) {
 	if (!c) {
 		c = memrchr(file + ofs, '\n', ofs);
 		if (!c)
-			c = file;
+			c = file - 1;
 	}
 	return c - file + 1;
 }
