@@ -27,8 +27,10 @@
  */
 static off_t get_fofs(char *file, size_t size, off_t ofs) {
 	char *c;
-	if (ofs == 0) return 0;
-	if (ofs > size) return size;
+	if (ofs == 0)
+		return 0;
+	if (ofs > size)
+		return size;
 	--ofs;
 	c = memchr(file + ofs, '\n', size - ofs);
 	if (!c) {
@@ -42,7 +44,8 @@ static off_t get_fofs(char *file, size_t size, off_t ofs) {
 /* Compares x[:xsize] with a line read from yf. */
 static int compare_line(char *file, size_t size, off_t fofs,
                           const char *x, size_t xsize) {
-	if (fofs == size) return 1;  /* Special casing of EOF at BOL. */
+	if (fofs == size)
+		return 1;  /* Special casing of EOF at BOL. */
 	int len = xsize < (size - fofs) ? xsize : (size - fofs);
 	/*int i = strcspn(file + fofs, "\n");
 	char *t = strndupa(file + fofs, i);
@@ -51,10 +54,9 @@ static int compare_line(char *file, size_t size, off_t fofs,
 	return r;
 }
 
-static char *bisect_way(
-	char *file, size_t size,
-	off_t lo, off_t hi,
-	const char *x, size_t xsize) {
+static char *bisect_way(char *file, size_t size,
+						off_t lo, off_t hi,
+						const char *x, size_t xsize) {
 	off_t mid, midf;
 	int cmp_result;
 	if (hi + 0ULL > size + 0ULL)
@@ -98,9 +100,9 @@ int main(int argc, char *argv[]) {
 		abort();
 	size = st.st_size;
 	file = mmap(NULL, size, PROT_READ, MAP_SHARED, fd, 0);
-	
+
 	result = bisect_way(file, size, 0, (off_t)-1, search, strlen(search));
-	//mummap(file, size); no need when the process will close so soon 
+	//mummap(file, size); no need when the process will close so soon
 	if (!result)
 		return EXIT_FAILURE;
 	int i = strcspn(result, "\n");
