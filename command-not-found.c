@@ -32,7 +32,11 @@
 #include <sys/stat.h>
 #include <sys/types.h>
 #include <unistd.h>
-#define _ gettext
+#ifndef CONFIG_OPENWRT
+	#define _ gettext
+#else
+	char *_(char *string) {return string;}
+#endif
 
 #include "command-not-found.h"
 #include "bisect.h"
@@ -43,9 +47,15 @@ char *arg_command = NULL;
 char *file;
 size_t file_size;
 
+#ifdef CONFIG_OPENWRT
+				/* packages is implied */
+static const char *components[] = {"base", "luci", "routing",
+		"telephony", NULL};
+#else /*Debian/Ubuntu */
 				/* main is implied */
 static const char *components[] = {"contrib", "non-free", "universe",
 		"multiverse", "restricted", NULL};
+#endif
 
 static int can_sudo() {
 	struct group *grp;
@@ -77,7 +87,11 @@ static int can_sudo() {
 }
 
 static bool is_root() {
+#ifdef CONFIG_OPENWRT
+	return true;
+#else
 	return (geteuid() == 0);
+#endif
 }
 
 static void spell_check_print_suggestion(const char *command, char *bin, char *package, char *s) {
@@ -274,11 +288,13 @@ int main(int argc, char *argv[]) {
 			fprintf(stderr, _("The command could not be "\
 "located because '%s' is not included in the PATH environment variable."), s);
 			fputc('\n', stderr);
+#ifndef CONFIG_OPENWRT
 			if (strcmp(s + strlen(s) - 5, "sbin") == 0) {
 				fprintf(stderr, _("This is most likely caused by the"\
 " lack of administrative privileges associated with your user account."));
 				fputc('\n', stderr);
 			}
+#endif
 			return EXIT_SUCCESS;
 		}
 
@@ -292,10 +308,12 @@ int main(int argc, char *argv[]) {
 	}
 
 	if (fd < 0) {
+#ifndef CONFIG_OPENWRT
 		if (errno == ENOENT)
 			fprintf(stderr, _("%s not found. "
 				"Run 'update-command-not-found' as root.\n"),
 				"/var/cache/command-not-found/db");
+#endif
 		goto fail;
 	}
 
@@ -337,7 +355,9 @@ int main(int argc, char *argv[]) {
 	fprintf(stderr, _("The program '%s' is currently not installed. "), arg_command);
 	if (is_root()) {
 		fprintf(stderr, _("You can install it by typing:"));
-#ifdef HAVE_RPM
+#ifdef CONFIG_OPENWRT
+		fprintf(stderr, "\nopkg install %s\n", package);
+#elif HAVE_RPM
 		fprintf(stderr, "\ndnf install %s\n", package);
 #else
 		fprintf(stderr, "\napt install %s\n", package);
@@ -356,7 +376,10 @@ int main(int argc, char *argv[]) {
 		fputc('\n', stderr);
 	}
 
+	/* TODO, support suggesting feeds on OpenWRT */
+#ifndef CONFIG_OPENWRT
 	if (is_main)
+#endif
 		goto success;
 
 	s = strv_find_prefix((char **)components, component);
