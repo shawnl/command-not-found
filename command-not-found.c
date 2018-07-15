@@ -32,11 +32,7 @@
 #include <sys/stat.h>
 #include <sys/types.h>
 #include <unistd.h>
-#ifndef CONFIG_OPENWRT
-	#define _ gettext
-#else
-	char *_(char *string) {return string;}
-#endif
+#define _ gettext
 
 #include "command-not-found.h"
 #include "bisect.h"
@@ -239,9 +235,10 @@ static int parse_argv(int argc, char *argv[]) {
 
 int main(int argc, char *argv[]) {
 	int r;
-	int fd = -1, sources_fd = -1;
-	char *command_ff, *bin, *package, **z, *s, *t, *t2, *t3, *component,
-		*sources_list;
+	int fd = -1;
+	char *command_ff, *bin, *package, **z, *s, *t, *t2, *t3, *component;
+	FILE *sources_list;
+	char buf[4096];
 	char **prefixes = STRV_MAKE("/usr/bin", "/usr/sbin", "/bin", "/sbin",
 			"/usr/local/bin", "/usr/games", NULL);
 	struct stat st;
@@ -389,38 +386,18 @@ int main(int argc, char *argv[]) {
 	// TODO investigate using 'apt-get indextargets' or <apt-pkg/sourcelist.h>
 	// As long as this catches the default installed ubuntu, and changes via
 	// Software and Updates...
-	sources_fd = open("/etc/apt/sources.list", O_RDONLY);
-	if (sources_fd < 0)
-		goto fail;
-	r = fstat(sources_fd, &st);
-	if (r < 0)
-		goto fail;
-	sources_list = mmap(NULL, st.st_size, PROT_READ, MAP_SHARED, fd, 0);
-	if (sources_list == MAP_FAILED)
-		goto fail;
-	close(sources_fd);
-	t = memmem(sources_list, st.st_size, s, strlen(s));
-	if (!t)
-		goto component_print;
+	sources_list = fopen("/etc/apt/sources.list", O_RDONLY);
+	while (fgets(&buf, sizeof(buf), sources_list) &&
+	       buf[0] == 'd' &&
+	       buf[1] == 'e' &&
+	       buf[2] == 'b' &&
+	       (buf[3] == ' ' || buf[3] == '\t'))
+		if (strstr(&buf, s))
+			goto success;
 
-	t2 = memchr(t, '#', st.st_size - (t - sources_list));
-	t3 = memchr(t, '\n', st.st_size - (t - sources_list));
-	if (!t2 && !t3)
-		goto component_print;
-	else if (!t2)
-		t = t3;
-	else if (!t3)
-		t = t2;
-	else
-		t = MIN(t2, t3);
-
-	if (memrchr(sources_list, '#', st.st_size - (t - sources_list)) >
-		memrchr(sources_list, '\n', st.st_size - (t - sources_list))) {
-component_print:
-		fprintf(stderr, _("You will have to enable "\
-				"the component called '%s'"), s);
-		fputc('\n', stderr);
-	}
+	fprintf(stderr, _("You will have to enable "\
+			"the component called '%s'"), s);
+	fputc('\n', stderr);
 success:
 	return EXIT_SUCCESS;
 fail:
