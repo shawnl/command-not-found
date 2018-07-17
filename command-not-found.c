@@ -388,6 +388,7 @@ int main(int argc, char *argv[]) {
 	// Software and Updates...
 	sources_list = fopen("/etc/apt/sources.list", O_RDONLY);
 	while (fgets(&buf, sizeof(buf), sources_list) &&
+	       strlen(&buf) > 4 &&
 	       buf[0] == 'd' &&
 	       buf[1] == 'e' &&
 	       buf[2] == 'b' &&
