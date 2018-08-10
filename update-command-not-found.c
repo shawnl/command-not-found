@@ -32,7 +32,7 @@
 #include "util.h"
 
 static int collect_contents(struct rb_root *t_bin) {
-	Cleanup(fclosep) FILE *contents_cat = NULL, *apt;
+	Cleanup(fclosep) FILE *contents_cat = NULL, *apt = NULL;
 	char buf[8192], *bin, *pkg, *cmn, *t, *t2, *t3;
 	Cleanup(freep) char *indextargets = NULL, *contents = NULL,
 		*popens = NULL;
