@@ -43,15 +43,9 @@ char *arg_command = NULL;
 char *file;
 size_t file_size;
 
-#ifdef CONFIG_OPENWRT
-				/* packages is implied */
-static const char *components[] = {"base", "luci", "routing",
-		"telephony", NULL};
-#else /*Debian/Ubuntu */
 				/* main is implied */
 static const char *components[] = {"contrib", "non-free", "universe",
 		"multiverse", "restricted", NULL};
-#endif
 
 static int can_sudo() {
 	struct group *grp;
@@ -83,11 +77,7 @@ static int can_sudo() {
 }
 
 static bool is_root() {
-#ifdef CONFIG_OPENWRT
-	return true;
-#else
 	return (geteuid() == 0);
-#endif
 }
 
 static void spell_check_print_suggestion(const char *command, char *bin, char *package, char *s) {
@@ -236,13 +226,13 @@ static int parse_argv(int argc, char *argv[]) {
 int main(int argc, char *argv[]) {
 	int r;
 	int fd = -1;
-	char *command_ff, *bin, *package, **z, *s, *t, *t2, *t3, *component;
+	char *command_ff, *bin, *package, **z, *s, *component;
 	FILE *sources_list;
 	char buf[4096];
 	char **prefixes = STRV_MAKE("/usr/bin", "/usr/sbin", "/bin", "/sbin",
 			"/usr/local/bin", "/usr/games", NULL);
 	struct stat st;
-	bool is_main = false;
+	bool is_main = false, is_snap = false;
 
 	/* run this early to prime the common case. */
 	fd = open("/var/cache/command-not-found/db", O_RDONLY);
@@ -285,13 +275,11 @@ int main(int argc, char *argv[]) {
 			fprintf(stderr, _("The command could not be "\
 "located because '%s' is not included in the PATH environment variable."), s);
 			fputc('\n', stderr);
-#ifndef CONFIG_OPENWRT
 			if (strcmp(s + strlen(s) - 5, "sbin") == 0) {
 				fprintf(stderr, _("This is most likely caused by the"\
 " lack of administrative privileges associated with your user account."));
 				fputc('\n', stderr);
 			}
-#endif
 			return EXIT_SUCCESS;
 		}
 
@@ -305,12 +293,10 @@ int main(int argc, char *argv[]) {
 	}
 
 	if (fd < 0) {
-#ifndef CONFIG_OPENWRT
 		if (errno == ENOENT)
 			fprintf(stderr, _("%s not found. "
 				"Run 'update-command-not-found' as root.\n"),
 				"/var/cache/command-not-found/db");
-#endif
 		goto fail;
 	}
 
@@ -350,33 +336,39 @@ int main(int argc, char *argv[]) {
 		*strchrnul(component, '\n') = '\0';
 	}
 	fprintf(stderr, _("The program '%s' is currently not installed. "), arg_command);
-	if (is_root()) {
-		fprintf(stderr, _("You can install it by typing:"));
-#ifdef CONFIG_OPENWRT
-		fprintf(stderr, "\nopkg install %s\n", package);
-#elif HAVE_RPM
-		fprintf(stderr, "\ndnf install %s\n", package);
-#else
-		fprintf(stderr, "\napt install %s\n", package);
-#endif
-	} else if (can_sudo() == 0) {
-		fprintf(stderr, _("You can install it by typing:"));
-#ifdef HAVE_RPM
-		fprintf(stderr, "\nsudo dnf install %s\n", package);
-#else
-		fprintf(stderr, "\nsudo apt install %s\n", package);
-#endif
-	} else {
-		fprintf(stderr, _("To run '%s' please ask your "
-			"administrator to install the package '%s'"),
-			arg_command, package);
+	if (component[0] == 's') {
+		is_snap = true;
+		if (is_root()) {
+			fprintf(stderr, _("You can install it by typing:"));
+			fprintf(stderr, "\n%ssnap install %s\n", "", package);
+		} else if (can_sudo() == 0) {
+			fprintf(stderr, _("You can install it by typing:"));
+			fprintf(stderr, "\n%ssnap install %s\n", "sudo ", package);
+		} else {
+			fprintf(stderr, _("To run '%s' please ask your "
+				"administrator to install the snap '%s'"),
+				arg_command, package);
+			fputc('\n', stderr);
+		}
+		fprintf(stderr, _("See 'snap info %s' for additional versions."), package);
 		fputc('\n', stderr);
+
+	} else { /* Not snap */
+		if (is_root()) {
+			fprintf(stderr, _("You can install it by typing:"));
+			fprintf(stderr, "\n%sapt install %s\n", "", package);
+		} else if (can_sudo() == 0) {
+			fprintf(stderr, _("You can install it by typing:"));
+			fprintf(stderr, "\n%sapt install %s\n", "sudo ", package);
+		} else {
+			fprintf(stderr, _("To run '%s' please ask your "
+				"administrator to install the package '%s'"),
+				arg_command, package);
+			fputc('\n', stderr);
+		}
 	}
 
-	/* TODO, support suggesting feeds on OpenWRT */
-#ifndef CONFIG_OPENWRT
-	if (is_main)
-#endif
+	if (is_main || is_snap)
 		goto success;
 
 	s = strv_find_prefix((char **)components, component);
