@@ -381,14 +381,14 @@ int main(int argc, char *argv[]) {
 	sources_list = fopen("/etc/apt/sources.list", "r");
 	if (!sources_list)
 	    goto success;
-	while (fgets((void*)&buf, sizeof(buf), sources_list) &&
-	       strlen((void *)&buf) > 4 &&
-	       buf[0] == 'd' &&
-	       buf[1] == 'e' &&
-	       buf[2] == 'b' &&
-	       (buf[3] == ' ' || buf[3] == '\t'))
-		if (strstr((void *)&buf, s))
-			goto success;
+	while (fgets((void*)&buf, sizeof(buf), sources_list))
+		if (strlen((void *)&buf) > 4 &&
+		    buf[0] == 'd' &&
+		    buf[1] == 'e' &&
+		    buf[2] == 'b' &&
+		    (buf[3] == ' ' || buf[3] == '\t'))
+			if (strstr((void *)&buf, s))
+				goto success;
 
 	fprintf(stderr, _("You will have to enable "\
 			"the component called '%s'"), s);
