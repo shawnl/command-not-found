@@ -45,7 +45,7 @@ size_t file_size;
 
 				/* main is implied */
 static const char *components[] = {"contrib", "non-free", "universe",
-		"multiverse", "restricted", NULL};
+		"multiverse", "restricted", "snap", NULL};
 
 static int can_sudo() {
 	struct group *grp;
@@ -89,7 +89,10 @@ static void spell_check_print_suggestion(const char *command, char *bin, char *p
 		printed_header = true;
 	}
 
-	fprintf(stderr, _(" Command '%s' from package '%s' (%s)"), bin, package, s);
+	if (s[0] == 's') /* snap */
+		fprintf(stderr, _(" Command '%s' from snap '%s'"), bin, package);
+	else
+		fprintf(stderr, _(" Command '%s' from package '%s' (%s)"), bin, package, s);
 	fputc('\n', stderr);
 }
 
