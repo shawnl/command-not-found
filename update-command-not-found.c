@@ -207,6 +207,10 @@ int main(int argc, char *argv[]) {
 		b = to_binary(n, n_bin);
 	} while (true);
 
+	FILE *foo = popen("snap advise-snap --dump-db | cat - /var/cache/command-not-found/db | sort > /var/cache/command-not-found/db", "r");
+	if (!foo)
+		goto fail;
+
 	return EXIT_SUCCESS;
 fail:
 	dprintf(2, "%s", strerror(-r));
