@@ -52,6 +52,12 @@ static int can_sudo() {
 	gid_t adm = 0, sudo = 0, wheel = 0;
 	gid_t mygroups[8092];
 	int r;
+	static int cached = -1;
+
+	if (cached == 0)
+		return 0;
+	else if (cached == 1)
+		return -ENOENT;
 
 	grp = getgrnam("adm");
 	if (grp)
@@ -69,10 +75,13 @@ static int can_sudo() {
 	for (int i = 0; i < r; i++) {
 		if (	(mygroups[i] == adm) ||
 			(mygroups[i] == sudo) ||
-			(mygroups[i] == wheel))
+			(mygroups[i] == wheel)) {
+			cached = 0;
 			return 0;
+		}
 	}
 
+	cached = 1;
 	return -ENOENT;
 }
 
@@ -229,13 +238,13 @@ static int parse_argv(int argc, char *argv[]) {
 int main(int argc, char *argv[]) {
 	int r;
 	int fd = -1;
-	char *command_ff, *bin, *package, **z, *s, *component, *t;
+	char *command_ff, *bin, *package, **z, *s, *s2, *component, *t, *s_next = NULL, *s_prev = NULL;
 	FILE *sources_list;
 	char buf[4096];
 	char **prefixes = STRV_MAKE("/usr/bin", "/usr/sbin", "/bin", "/sbin",
 			"/usr/local/bin", "/usr/games", NULL);
 	struct stat st;
-	bool is_main = false, is_snap = false;
+	bool is_main = false, had_snap = false, have_multiple = false, is_first = true;
 
 	/* run this early to prime the common case. */
 	fd = open("/var/cache/command-not-found/db", O_RDONLY);
@@ -319,10 +328,27 @@ int main(int argc, char *argv[]) {
 	strcpy(command_ff, arg_command);
 	command_ff[strlen(arg_command)] = '\xff';
 	command_ff[strlen(arg_command) + 1] = '\0';
-	s = bisect_search(file, file_size, command_ff, strlen(arg_command) + 1);
+	s2 = s = bisect_search(file, file_size, command_ff, strlen(arg_command) + 1);
 	if (!s) {
 		spell_check(arg_command);
 		goto bail;
+	}
+againright:
+	if ((t = memchr(s, '\n', file_size - (s - file))) &&
+		memcmp(t + 1, command_ff, strlen(command_ff)) == 0) {
+		have_multiple = true;
+		s_next = t + 1;
+	} else {
+againleft:
+		if ((t = memrchr(file, '\n', s2 - file - 1)) &&
+			memcmp(t + 1, command_ff, strlen(command_ff)) == 0) {
+			have_multiple = true;
+			s_next = NULL;
+			s_prev = t + 1;
+		} else {
+			s_next = NULL;
+			s_prev = NULL;
+		}
 	}
 	t = memchr(s, '\n', file_size - (s - file));
 	if (!t)
@@ -341,40 +367,105 @@ int main(int argc, char *argv[]) {
 		*component++ = '\0';
 		*strchrnul(component, '\n') = '\0';
 	}
-	fprintf(stderr, _("The program '%s' is currently not installed. "), arg_command);
+	if (is_first) {
+		fprintf(stderr, _("The program '%s' is currently not installed. "), arg_command);
+	}
 	if (component[0] == 's') {
-		is_snap = true;
+		had_snap = true;
 		if (is_root()) {
-			fprintf(stderr, _("You can install it by typing:"));
-			fprintf(stderr, "\n%ssnap install %s\n", "", package);
+			if (is_first) {
+				if (have_multiple)
+					fprintf(stderr, _("You can install it by typing one of the following:"));
+				else
+					fprintf(stderr, _("You can install it by typing:"));
+				fputc('\n', stderr);
+				is_first = false;
+			}
+			fprintf(stderr, "%ssnap install %s\n", "", package);
 		} else if (can_sudo() == 0) {
-			fprintf(stderr, _("You can install it by typing:"));
-			fprintf(stderr, "\n%ssnap install %s\n", "sudo ", package);
+			if (is_first) {
+				if (have_multiple)
+					fprintf(stderr, _("You can install it by typing one of the following:"));
+				else
+					fprintf(stderr, _("You can install it by typing:"));
+				fputc('\n', stderr);
+				is_first = false;
+			}
+			fprintf(stderr, "%ssnap install %s\n", "sudo ", package);
 		} else {
-			fprintf(stderr, _("To run '%s' please ask your "
-				"administrator to install the snap '%s'"),
-				arg_command, package);
+			if (have_multiple) {
+				if (is_first) {
+					fprintf(stderr, _("To run '%s' please ask your"
+						"administrator to install one of the fallowing packages:"),
+						arg_command);
+					fputc('\n', stderr);
+					is_first = false;
+				}
+				fprintf(stderr, "%s (snap)\n", package);
+			} else {
+				fprintf(stderr, _("To run '%s' please ask your "
+					"administrator to install the snap '%s'"),
+					arg_command, package);
+				fputc('\n', stderr);
+			}
+		}
+		if (is_first && !have_multiple) {
+			fprintf(stderr, _("See 'snap info %s' for additional versions."), package);
 			fputc('\n', stderr);
 		}
-		fprintf(stderr, _("See 'snap info %s' for additional versions."), package);
-		fputc('\n', stderr);
 
 	} else { /* Not snap */
 		if (is_root()) {
-			fprintf(stderr, _("You can install it by typing:"));
-			fprintf(stderr, "\n%sapt install %s\n", "", package);
+			if (is_first) {
+				if (have_multiple) {
+					fprintf(stderr, _("You can install it by typing one of the following:"));
+					fputc('\n', stderr);
+				} else {
+					fprintf(stderr, _("You can install it by typing:"));
+					fputc('\n', stderr);
+				}
+				is_first = false;
+			}
+			fprintf(stderr, "%sapt install %s\n", "", package);
 		} else if (can_sudo() == 0) {
-			fprintf(stderr, _("You can install it by typing:"));
-			fprintf(stderr, "\n%sapt install %s\n", "sudo ", package);
+			if (is_first) {
+				if (have_multiple) {
+					fprintf(stderr, _("You can install it by typing one of the following:"));
+					fputc('\n', stderr);
+				} else {
+					fprintf(stderr, _("You can install it by typing:"));
+					fputc('\n', stderr);
+				}
+				is_first = false;
+			}
+			fprintf(stderr, "%sapt install %s\n", "sudo ", package);
 		} else {
-			fprintf(stderr, _("To run '%s' please ask your "
-				"administrator to install the package '%s'"),
-				arg_command, package);
-			fputc('\n', stderr);
+			if (have_multiple) {
+				if (is_first) {
+					fprintf(stderr, _("To run '%s' please ask your"
+						"administrator to install one of the fallowing packages:"),
+						arg_command);
+					fputc('\n', stderr);
+					is_first = false;
+				}
+				fprintf(stderr, "%s\n", package);
+			} else {
+				fprintf(stderr, _("To run '%s' please ask your "
+					"administrator to install the package '%s'"),
+					arg_command, package);
+				fputc('\n', stderr);
+			}
 		}
 	}
+	if (s_next) {
+		s = s_next;
+		goto againright;
+	} else if (s_prev) {
+		s = s_prev;
+		goto againleft;
+	}
 
-	if (is_main || is_snap)
+	if (is_main || had_snap)
 		goto success;
 
 	s = strv_find_prefix((char **)components, component);
