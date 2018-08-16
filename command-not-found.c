@@ -229,7 +229,7 @@ static int parse_argv(int argc, char *argv[]) {
 int main(int argc, char *argv[]) {
 	int r;
 	int fd = -1;
-	char *command_ff, *bin, *package, **z, *s, *component;
+	char *command_ff, *bin, *package, **z, *s, *component, *t;
 	FILE *sources_list;
 	char buf[4096];
 	char **prefixes = STRV_MAKE("/usr/bin", "/usr/sbin", "/bin", "/sbin",
@@ -324,7 +324,10 @@ int main(int argc, char *argv[]) {
 		spell_check(arg_command);
 		goto bail;
 	}
-	bin = strndupa(s, strchrnul(s, '\n') - s + 1);
+	t = memchr(s, '\n', file_size - (s - file));
+	if (!t)
+		goto bail;
+	bin = strndupa(s, t - s + 1);
 	package = strchr(bin, '\xff');
 	if (!package)
 		goto bail;
