@@ -27,11 +27,10 @@
 #include <unistd.h>
 #define _ gettext
 
-#include "rb.h"
 #include "update-command-not-found.h"
 #include "util.h"
 
-static int collect_contents(struct rb_root *t_bin) {
+static int collect_contents(FILE *db) {
 	Cleanup(fclosep) FILE *contents_cat = NULL, *apt = NULL;
 	char buf[8192], *bin, *pkg, *cmn, *t, *t2, *t3;
 	Cleanup(freep) char *indextargets = NULL, *contents = NULL,
@@ -128,9 +127,6 @@ static int collect_contents(struct rb_root *t_bin) {
 		node = malloc(sizeof(struct binary));
 		if (!node)
 			return -ENOMEM;
-#ifndef NDEBUG
-		node->n_bin.sanity = 4138;
-#endif
 		node->bin = strdup(bin);
 		node->pkg = strdup(pkg);
 		if (!node->bin | !node->pkg)
@@ -151,27 +147,19 @@ static int collect_contents(struct rb_root *t_bin) {
 		*strchrnul(node->entry, '\0') = '\xff';
 		*(strchrnul(node->entry, '\xff') + 1) = '\0';
 
-		rb_insert(&node->n_bin, t_bin);
+		if (strcmp(node->cmn, "main") == 0)
+			r = fprintf(db, "%s\xff%s\n", node->bin, node->pkg);
+		else
+			r = fprintf(db, "%s\xff%s/%c\n", node->bin, node->pkg, node->cmn[0]);
+		if (r < 0)
+			return -errno;
+
 	} while (true);
 
 	return 0;
 }
 
-static inline int compare_bin(const struct rb_node *a,
-			      const struct rb_node *b) {
-	struct binary *p = to_binary(a, n_bin);
-	struct binary *q = to_binary(b, n_bin);
-
-	return strcmp(p->entry, q->entry);
-}
-
-/* These are for debugging. */
-static struct binary *get_bin(struct rb_node *node) {return to_binary(node, n_bin);}
-
 int main(int argc, char *argv[]) {
-	struct rb_root bin;
-	struct binary *b;
-	struct rb_node *n;
 	int r;
 	Cleanup(fclosep) FILE *db = NULL;
 
@@ -179,35 +167,18 @@ int main(int argc, char *argv[]) {
 	bindtextdomain(PACKAGE, LOCALEDIR);
 	textdomain(PACKAGE);
 
-	rb_init(&bin, compare_bin, 0);
-
-	if ((r = collect_contents(&bin)) < 0)
-		goto fail;
-
-	db = fopen("/var/cache/command-not-found/db", "w+");
+	db = fopen("/var/cache/command-not-found/db-unsorted", "w+");
 	if (!db) {
 		r = -errno;
 		goto fail;
 	}
 
-	n = rb_first(&bin);
-	if (!n) {
-		return EXIT_FAILURE;
-	}
-	b = rb_entry(n, struct binary, n_bin);
-	do {
-		if (strcmp(b->cmn, "main") == 0)
-			fprintf(db, "%s\xff%s\n", b->bin, b->pkg);
-		else
-			fprintf(db, "%s\xff%s/%c\n", b->bin, b->pkg, b->cmn[0]);
+	if ((r = collect_contents(db)) < 0)
+		goto fail;
 
-		n = rb_next(&b->n_bin);
-		if (!n)
-			break;
-		b = to_binary(n, n_bin);
-	} while (true);
-
-	FILE *foo = popen("snap advise-snap --dump-db | cat - /var/cache/command-not-found/db | sort > /var/cache/command-not-found/db", "r");
+	FILE *foo = popen("snap advise-snap --dump-db | cat - /var/cache/command-not-found/db-unsorted | sort > /var/cache/command-not-found/db-sorted;"\
+	                  "mv /var/cache/command-not-found/db-sorted /var/cache/command-not-found/db;"\
+	                  "rm /var/cache/command-not-found/db-unsorted;", "r");
 	if (!foo)
 		goto fail;
 
