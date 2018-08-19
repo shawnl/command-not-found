@@ -176,7 +176,7 @@ int main(int argc, char *argv[]) {
 	if ((r = collect_contents(db)) < 0)
 		goto fail;
 
-	FILE *foo = popen("if command -v snap; then snap advise-snap --dump-db; else true; fi | cat - /var/cache/command-not-found/db-unsorted | sort -u > /var/cache/command-not-found/db-sorted;"\
+	FILE *foo = popen("if command -v snap; then snap advise-snap --dump-db; else true; fi | cat - /var/cache/command-not-found/db-unsorted | LC_ALL=C sort -u > /var/cache/command-not-found/db-sorted;"\
 	                  "mv /var/cache/command-not-found/db-sorted /var/cache/command-not-found/db;"\
 	                  "rm /var/cache/command-not-found/db-unsorted;", "r");
 	if (!foo)
