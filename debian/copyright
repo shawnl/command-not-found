@@ -1,15 +1,11 @@
 Format: http://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
 
 Files: *
-Copyright: © 2017 Shawn Landden <slandden@gmail.com>
+Copyright: © 2017-2018 Shawn Landden <shawn@git.icu>
 License: LGPL-2.1+
 
 Files: util.c util.h
 Copyright: © 2010-2015 Lennart Poettering <mzvzcerffhz@0pointer.de>
-License: LGPL-2.1+
-
-Files: rb.c rb.h
-Copyright: © 2010-2014 Franck Bui-Huu <fbuihuu@gmail.com>
 License: LGPL-2.1+
 
 License: LGPL-2.1+

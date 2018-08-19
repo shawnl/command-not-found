@@ -1,7 +1,7 @@
 Source: command-not-found
 Section: admin
 Priority: optional
-Maintainer: Shawn Landden <slandden@gmail.com>
+Maintainer: Shawn Landden <shawn@git.icu>
 Build-Depends: debhelper (>= 10.3),
 	meson,
 	gettext
