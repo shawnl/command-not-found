@@ -248,6 +248,15 @@ int main(int argc, char *argv[]) {
 
 	/* run this early to prime the common case. */
 	fd = open("/var/cache/command-not-found/db", O_RDONLY);
+	r = fstat(fd, &st);
+	if (r < 0)
+		abort();
+	file_size = st.st_size;
+	file = mmap(NULL, file_size, PROT_READ, MAP_SHARED, fd, 0);
+	if (file == MAP_FAILED)
+		goto fail;
+	(void)madvise(file, file_size, MADV_WILLNEED);
+	close(fd);
 
 	setlocale(LC_ALL, "");
 	bindtextdomain(PACKAGE, LOCALEDIR);
@@ -312,14 +321,7 @@ int main(int argc, char *argv[]) {
 		goto fail;
 	}
 
-	r = fstat(fd, &st);
-	if (r < 0)
-		abort();
-	file_size = st.st_size;
-	file = mmap(NULL, file_size, PROT_READ, MAP_SHARED, fd, 0);
-	if (file == MAP_FAILED)
-		goto fail;
-	close(fd);
+
 
 	// linux/binfmts.h:
 	// #define MAX_ARG_STRLEN (PAGE_SIZE * 32)
