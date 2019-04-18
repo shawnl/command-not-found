@@ -1,1 +1,2 @@
 obj-*/update-command-not-found /usr/sbin
+debian/50-command-not-found /etc/apt/apt.conf.d
