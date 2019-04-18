@@ -70,7 +70,7 @@ static int collect_contents(FILE *db) {
 	if (r < 0)
 		return -errno;
 	if (strlen(contents) == 0) {
-		puts(_("Contents of packages not available. Install 'apt-file' and then run 'apt-get update'.\n"));
+		puts(_("Contents of packages not available. Install 'apt-file' and then run 'apt update'.\n"));
 		return EXIT_FAILURE;
 	}
 	r = asprintf(&popens, "/usr/lib/apt/apt-helper cat-file %s", contents);
