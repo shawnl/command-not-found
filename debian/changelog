@@ -1,4 +1,4 @@
-command-not-found-ng (25) unstable; urgency=medium
+command-not-found-ng (1) unstable; urgency=medium
 
   * Rewrite in C.
   * Remind user to 'apt-get update' after installing apt-file (See: #857090)
