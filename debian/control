@@ -6,7 +6,7 @@ Maintainer: Shawn Landden <shawn@git.icu>
 Build-Depends: debhelper-compat (= 12),
 	meson,
 	gettext
-Standards-Version: 4.1.1.1
+Standards-Version: 4.3.0
 
 Package: command-not-found-ng
 Architecture: any
