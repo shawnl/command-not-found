@@ -247,7 +247,7 @@ int main(int argc, char *argv[]) {
 	fd = open("/var/cache/command-not-found/db", O_RDONLY);
 	r = fstat(fd, &st);
 	if (r < 0)
-		abort();
+		goto fail;
 	file_size = st.st_size;
 	file = mmap(NULL, file_size, PROT_READ, MAP_SHARED, fd, 0);
 	if (file == MAP_FAILED)
