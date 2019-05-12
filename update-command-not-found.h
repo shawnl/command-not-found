@@ -5,6 +5,6 @@
 struct binary {
 	char *bin;
 	char *pkg;
-	char *cmn; /*component */
+	char cmn; /*component */
 	char *entry;
 };

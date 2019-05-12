@@ -31,10 +31,10 @@
 #include "util.h"
 
 static int collect_contents(FILE *db) {
-	Cleanup(fclosep) FILE *contents_cat = NULL, *apt = NULL;
+	Cleanup(fclosep) FILE *contents_cat = NULL, *apt = NULL, *snap = NULL;
 	char buf[8192], *bin, *pkg, *cmn, *t, *t2, *t3;
 	Cleanup(freep) char *indextargets = NULL, *contents = NULL,
-		*popens = NULL;
+		*popens = NULL, *snap_db = NULL;
 	int r;
 
 	if (!(apt = popen("apt-get indextargets", "r")))
@@ -71,90 +71,94 @@ static int collect_contents(FILE *db) {
 		return -errno;
 	if (strlen(contents) == 0) {
 		puts(_("Contents of packages not available. Install 'apt-file' and then run 'apt update'.\n"));
-		return EXIT_FAILURE;
+		return -ENOENT;
 	}
 	r = asprintf(&popens, "/usr/lib/apt/apt-helper cat-file %s", contents);
 	if (r < 0)
 		return -errno;
 
+	snap = popen("snap advise-snap --dump-db");
+	if (!snap)
+		puts(_("Warning: not including snaps: %m"));
+
 	if (!(contents_cat = popen(popens,
 		"r")))
 		return -ENOENT;
-	do {
-		struct binary *node;
+	bool from_snap = false;
+	while (true) {
+		struct binary node;
 		bool got_component = false;
 
-		if (!fgets((char *)&buf, sizeof(buf), contents_cat))
-			break;
-		if (!memcmp("usr/bin/", &buf, strlen("usr/bin/")) ||
-		    !memcmp("usr/sbin/", &buf, strlen("usr/sbin/")) ||
-		    !memcmp("bin/", &buf, strlen("bin/")) ||
-		    !memcmp("sbin/", &buf, strlen("sbin/")) ||
-		    !memcmp("usr/games/", &buf, strlen("usr/games/")))
-			/*go below*/;
-		else
-			continue;
+		if (!from_snap) {
+			if (!fgets((char *)&buf, sizeof(buf), contents_cat)) {
+				from_snap = true;
+				continue;
+			}
+			if (!memcmp("usr/bin/", &buf, strlen("usr/bin/")) ||
+			    !memcmp("usr/sbin/", &buf, strlen("usr/sbin/")) ||
+			    !memcmp("bin/", &buf, strlen("bin/")) ||
+			    !memcmp("sbin/", &buf, strlen("sbin/")) ||
+			    !memcmp("usr/games/", &buf, strlen("usr/games/")))
+				/*go below*/;
+			else
+				continue;
 
-		t = &buf[strcspn((char *)&buf, " \t")];
-		if (!t)
-			return -EINVAL;
-		*t++ = '\0';
-		t2 = strrchr((char *)&buf, '/');
-		if (!t2)
-			t2 = (char *)&buf - 1;
-		bin = t2 + 1;
+			t = &buf[strcspn((char *)&buf, " \t")];
+			if (!t)
+				return -EINVAL;
+			*t++ = '\0';
+			t2 = strrchr((char *)&buf, '/');
+			if (!t2)
+				t2 = (char *)&buf - 1;
+			bin = t2 + 1;
 
-		/*get package name*/
-		t3 = strrchr(t + 1, '/');
-		if (!t3)
-			return -EINVAL;
-		pkg = t3 + 1;
-		*(t3 + strlen(t3) - 1) = '\0'; /*kill the newline*/
+			/*get package name*/
+			t3 = strrchr(t + 1, '/');
+			if (!t3)
+				return -EINVAL;
+			pkg = t3 + 1;
+			*(t3 + strlen(t3) - 1) = '\0'; /*kill the newline*/
 
-		/* get component (if it doesn't exist, package is in main) */
-		if ((t2 = strchr(t + 1, ','))) {
-			t = t2 + 1;
-			t2 = strchr(t2 + 1, '/');
+			/* get component (if it doesn't exist, package is in main) */
+			if ((t2 = strchr(t + 1, ','))) {
+				t = t2 + 1;
+				t2 = strchr(t2 + 1, '/');
+			} else
+				t2 = strchr(t + 1, '/');
+			if (t2 && strchr(t2 + 1, '/')) {
+				t2[0] = '\0';
+				cmn = t + strspn(t, " \t");
+				got_component = true;
+			}
+		} else if (fgets((char *)&buf, sizeof(buf), snap)) {
+			/* We modify buf *in place* */
+			bin = buf;
+			pkg = strchr(buf, " ");
+			if (!pkg)
+				return -EINVAL;
+			pkg++ = '\0';
+			t = strchr(name, " ");
+			if (!t)
+				return -EINVAL;
+			cmn = 's';
 		} else
-			t2 = strchr(t + 1, '/');
-		if (t2 && strchr(t2 + 1, '/')) {
-			t2[0] = '\0';
-			cmn = t + strspn(t, " \t");
-			got_component = true;
-		}
+			break;
 
-		//printf("%s %s\n", bin, pkg);
-		node = malloc(sizeof(struct binary));
-		if (!node)
-			return -ENOMEM;
-		node->bin = strdup(bin);
-		node->pkg = strdup(pkg);
-		if (!node->bin | !node->pkg)
-			return -ENOMEM;
+		node.bin = bin;
+		node.pkg = pkg;
 
 		if (got_component) {
-			node->cmn = strdup(cmn);
-			if (!node->bin)
-				return -ENOMEM;
+			node.cmn = cmn;
 		} else
-			node->cmn = "main";
+			node->cmn = 'm';
 
-		node->entry = malloc(strlen(bin) + 2);
-		if (!node->entry)
-			return -ENOMEM;
-
-		strcpy(node->entry, node->bin);
-		*strchrnul(node->entry, '\0') = '\xff';
-		*(strchrnul(node->entry, '\xff') + 1) = '\0';
-
-		if (strcmp(node->cmn, "main") == 0)
-			r = fprintf(db, "%s\xff%s\n", node->bin, node->pkg);
+		if (node.cmn == 'm') == 0)
+			r = fprintf(db, "%s\xff%s\n", node.bin, node.pkg);
 		else
-			r = fprintf(db, "%s\xff%s/%c\n", node->bin, node->pkg, node->cmn[0]);
+			r = fprintf(db, "%s\xff%s/%c\n", node.bin, node.pkg, node.cmn);
 		if (r < 0)
 			return -errno;
-
-	} while (true);
+	};
 
 	return 0;
 }
@@ -176,11 +180,13 @@ int main(int argc, char *argv[]) {
 	if ((r = collect_contents(db)) < 0)
 		goto fail;
 
-	FILE *foo = popen("if command -v snap; then snap advise-snap --dump-db; else true; fi | cat - /var/cache/command-not-found/db-unsorted | LC_ALL=C sort -u > /var/cache/command-not-found/db-sorted;"\
-	                  "mv /var/cache/command-not-found/db-sorted /var/cache/command-not-found/db;"\
-	                  "rm /var/cache/command-not-found/db-unsorted;", "r");
-	if (!foo)
+	FILE *foo = popen("LC_ALL=C sort -u /var/cache/command-not-found/db-unsorted > /var/cache/command-not-found/db-sorted;" \
+			  "mv /var/cache/command-not-found/db-sorted /var/cache/command-not-found/db;"\
+			  "rm /var/cache/command-not-found/db-unsorted;", "r");
+	if (!foo) {
+		r = -errno;
 		goto fail;
+	}
 
 	return EXIT_SUCCESS;
 fail:
