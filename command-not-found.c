@@ -45,7 +45,7 @@ size_t file_size;
 
 				/* main is implied */
 static const char *components[] = {"contrib", "non-free", "universe",
-		"multiverse", "restricted", NULL};
+		"multiverse", "restricted", "snap", NULL};
 
 static int can_sudo() {
 	struct group *grp;
@@ -98,7 +98,10 @@ static void spell_check_print_suggestion(const char *command, char *bin, char *p
 		printed_header = true;
 	}
 
-	fprintf(stderr, _(" Command '%s' from package '%s' (%s)"), bin, package, s);
+	if (s[0] == 's') /* snap */
+		fprintf(stderr, _(" Command '%s' from snap '%s'"), bin, package);
+	else
+		fprintf(stderr, _(" Command '%s' from package '%s' (%s)"), bin, package, s);
 	fputc('\n', stderr);
 }
 
@@ -241,7 +244,7 @@ int main(int argc, char *argv[]) {
 	char **prefixes = STRV_MAKE("/usr/bin", "/usr/sbin", "/bin", "/sbin",
 			"/usr/local/bin", "/usr/games", NULL);
 	struct stat st;
-	bool is_main = false, have_multiple = false, is_first = true;
+	bool is_main = false, had_snap = false, have_multiple = false, is_first = true;
 
 	/* run this early to prime the common case. */
 	fd = open("/var/cache/command-not-found/db", O_RDONLY);
@@ -369,45 +372,91 @@ againleft:
 	if (is_first) {
 		fprintf(stderr, _("The program '%s' is currently not installed. "), arg_command);
 	}
-	if (is_root()) {
-		if (is_first) {
-			if (have_multiple) {
-				fprintf(stderr, _("You can install it by typing one of the following:"));
-				fputc('\n', stderr);
-			} else {
-				fprintf(stderr, _("You can install it by typing:"));
-				fputc('\n', stderr);
-			}
-			is_first = false;
-		}
-		fprintf(stderr, "%sapt install %s\n", "", package);
-	} else if (can_sudo() == 0) {
-		if (is_first) {
-			if (have_multiple) {
-				fprintf(stderr, _("You can install it by typing one of the following:"));
-				fputc('\n', stderr);
-			} else {
-				fprintf(stderr, _("You can install it by typing:"));
-				fputc('\n', stderr);
-			}
-			is_first = false;
-		}
-		fprintf(stderr, "%sapt install %s\n", "sudo ", package);
-	} else {
-		if (have_multiple) {
+	if (component[0] == 's') {
+		had_snap = true;
+		if (is_root()) {
 			if (is_first) {
-				fprintf(stderr, _("To run '%s' please ask your"
-					"administrator to install one of the fallowing packages:"),
-					arg_command);
+				if (have_multiple)
+					fprintf(stderr, _("You can install it by typing one of the following:"));
+				else
+					fprintf(stderr, _("You can install it by typing:"));
 				fputc('\n', stderr);
 				is_first = false;
 			}
-			fprintf(stderr, "%s\n", package);
+			fprintf(stderr, "%ssnap install %s\n", "", package);
+		} else if (can_sudo() == 0) {
+			if (is_first) {
+				if (have_multiple)
+					fprintf(stderr, _("You can install it by typing one of the following:"));
+				else
+					fprintf(stderr, _("You can install it by typing:"));
+				fputc('\n', stderr);
+				is_first = false;
+			}
+			fprintf(stderr, "%ssnap install %s\n", "sudo ", package);
 		} else {
-			fprintf(stderr, _("To run '%s' please ask your "
-				"administrator to install the package '%s'"),
-				arg_command, package);
+			if (have_multiple) {
+				if (is_first) {
+					fprintf(stderr, _("To run '%s' please ask your"
+						"administrator to install one of the fallowing packages:"),
+						arg_command);
+					fputc('\n', stderr);
+					is_first = false;
+				}
+				fprintf(stderr, "%s (snap)\n", package);
+			} else {
+				fprintf(stderr, _("To run '%s' please ask your "
+					"administrator to install the snap '%s'"),
+					arg_command, package);
+				fputc('\n', stderr);
+			}
+		}
+		if (is_first && !have_multiple) {
+			fprintf(stderr, _("See 'snap info %s' for additional versions."), package);
 			fputc('\n', stderr);
+		}
+
+	} else { /* Not snap */
+		if (is_root()) {
+			if (is_first) {
+				if (have_multiple) {
+					fprintf(stderr, _("You can install it by typing one of the following:"));
+					fputc('\n', stderr);
+				} else {
+					fprintf(stderr, _("You can install it by typing:"));
+					fputc('\n', stderr);
+				}
+				is_first = false;
+			}
+			fprintf(stderr, "%sapt install %s\n", "", package);
+		} else if (can_sudo() == 0) {
+			if (is_first) {
+				if (have_multiple) {
+					fprintf(stderr, _("You can install it by typing one of the following:"));
+					fputc('\n', stderr);
+				} else {
+					fprintf(stderr, _("You can install it by typing:"));
+					fputc('\n', stderr);
+				}
+				is_first = false;
+			}
+			fprintf(stderr, "%sapt install %s\n", "sudo ", package);
+		} else {
+			if (have_multiple) {
+				if (is_first) {
+					fprintf(stderr, _("To run '%s' please ask your"
+						"administrator to install one of the fallowing packages:"),
+						arg_command);
+					fputc('\n', stderr);
+					is_first = false;
+				}
+				fprintf(stderr, "%s\n", package);
+			} else {
+				fprintf(stderr, _("To run '%s' please ask your "
+					"administrator to install the package '%s'"),
+					arg_command, package);
+				fputc('\n', stderr);
+			}
 		}
 	}
 	if (s_next) {
@@ -418,7 +467,7 @@ againleft:
 		goto againleft;
 	}
 
-	if (is_main)
+	if (is_main || had_snap)
 		goto success;
 
 	s = strv_find_prefix((char **)components, component);
