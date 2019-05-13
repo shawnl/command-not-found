@@ -130,7 +130,7 @@ static int collect_contents(FILE *db) {
 				cmn = t + strspn(t, " \t");
 				got_component = true;
 			}
-		} else if (fgets((char *)&buf, sizeof(buf), snap)) {
+		} else if (snap && fgets((char *)&buf, sizeof(buf), snap)) {
 			/* We modify buf *in place* */
 			bin = buf;
 			pkg = strchr(buf, " ");
