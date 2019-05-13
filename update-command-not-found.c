@@ -115,7 +115,7 @@ static int collect_contents(FILE *db) {
 			/*get package name*/
 			t3 = strrchr(t + 1, '/');
 			if (!t3)
-				return -EINVAL;
+				t3 = t + strspn(t, " \t");
 			pkg = t3 + 1;
 			*(t3 + strlen(t3) - 1) = '\0'; /*kill the newline*/
 
