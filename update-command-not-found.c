@@ -118,7 +118,7 @@ static int collect_contents(FILE *db) {
 		puts(_("Warning: No commands listings downloaded via apt."));
 
 	if (access("/usr/bin/snap", X_OK))
-		snap = popen("/usr/bin.snap advise-snap --dump-db", "r");
+		snap = popen("/usr/bin/snap advise-snap --dump-db", "r");
 	else
 		errno = ENOENT;
 	if (!snap)
