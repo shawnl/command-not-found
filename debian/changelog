@@ -1,10 +1,13 @@
-command-not-found-ng (1) unstable; urgency=medium
+command-not-found (50) unstable; urgency=medium
 
   * Rewrite in C.
-  * Remind user to 'apt-get update' after installing apt-file (See: #857090)
+  * Remind user to 'apt-get update' after installing apt-file (Close: #857090)
+  * Snap support
+  * Commands file support
+  * Updator drops priviledges
   * Limit spell check suggestions to 4 characters or more
   * Apt post-upgrade hook.
-  * command-not-found manpage. (See: #604779)
+  * command-not-found manpage. (Close: #604779)
     - Thanks Vincent Cheng <vcheng@debian.org>
 
  -- Shawn Landden <shawn@git.icu>  Sun, 21 Apr 2019 08:46:07 -0500
