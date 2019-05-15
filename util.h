@@ -6,6 +6,8 @@
 
 #define PACKAGE "command-not-found"
 #define LOCALEDIR "/usr/share/locale"
+#define USER "debian-command-not-found"
+#define GROUP "debian-command-not-found"
 
 #define Cleanup(x) __attribute__((cleanup(x)))
 

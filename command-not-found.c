@@ -38,9 +38,6 @@
 #include "command-not-found.h"
 #include "bisect.h"
 
-#define USER "debian-command-not-found"
-#define GROUP "debian-command-not-found"
-
 bool arg_ignore_installed = false;
 char *arg_command = NULL;
 
