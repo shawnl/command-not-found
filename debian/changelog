@@ -4,7 +4,8 @@ command-not-found (50) unstable; urgency=medium
   * Remind user to 'apt-get update' after installing apt-file (Close: #857090)
   * Snap support
   * Commands file support
-  * Updator drops priviledges
+  * Drops priviledges if root.
+  * Updator drops priviledges if root.
   * Limit spell check suggestions to 4 characters or more
   * Apt post-upgrade hook.
   * command-not-found manpage. (Close: #604779)

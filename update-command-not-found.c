@@ -26,6 +26,8 @@
 #include <string.h>
 #include <unistd.h>
 #include <sys/mman.h>
+#include <sys/types.h>
+#include <pwd.h>
 #define _ gettext
 
 #include "update-command-not-found.h"
@@ -246,6 +248,10 @@ static int collect_contents(FILE *db) {
 	return 0;
 }
 
+static bool is_root() {
+	return geteuid() == 0;
+}
+
 int main(int argc, char *argv[]) {
 	int r;
 	Cleanup(fclosep) FILE *db = NULL;
@@ -253,6 +259,21 @@ int main(int argc, char *argv[]) {
 	setlocale(LC_ALL, "");
 	bindtextdomain(PACKAGE, LOCALEDIR);
 	textdomain(PACKAGE);
+
+	if (is_root()) {
+		struct passwd *user = getpwnam(USER);
+		if (!user) {
+			printf(_("No '%s' user found. Cannot drop root permissions. Aborting."), USER);
+			errno = ENOENT;
+			goto fail;
+		}
+		r = setuid(user->pw_uid);
+		if (r < 0)
+			goto fail;
+		r = setgid(user->pw_gid);
+		if (r < 0)
+			goto fail;
+	}
 
 	db = fopen("/var/cache/command-not-found/db-unsorted", "w+");
 	if (!db) {

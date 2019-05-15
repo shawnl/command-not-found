@@ -90,7 +90,10 @@ static int can_sudo() {
 }
 
 static bool is_root() {
-	return (geteuid() == 0);
+	static int was_root = -1;
+	if (was_root == -1)
+		was_root = geteuid();
+	return (was_root == 0);
 }
 
 static void spell_check_print_suggestion(const char *command, char *bin, char *package, char *s) {
@@ -262,18 +265,20 @@ int main(int argc, char *argv[]) {
 	(void)madvise(file, file_size, MADV_WILLNEED);
 	close(fd);
 
-	struct passwd *user = getpwnam(USER);
-	if (!user) {
-		printf(_("No '%s' user found. Cannot drop permissions. Aborting."), USER);
-		errno = ENOENT;
-		goto fail;
+	if (is_root()) {
+		struct passwd *user = getpwnam(USER);
+		if (!user) {
+			printf(_("No '%s' user found. Cannot drop root permissions. Aborting."), USER);
+			errno = ENOENT;
+			goto fail;
+		}
+		r = setuid(user->pw_uid);
+		if (r < 0)
+			goto fail;
+		r = setgid(user->pw_gid);
+		if (r < 0)
+			goto fail;
 	}
-	r = setuid(user->pw_uid);
-	if (r < 0)
-		goto fail;
-	r = setgid(user->pw_gid);
-	if (r < 0)
-		goto fail;
 
 	setlocale(LC_ALL, "");
 	bindtextdomain(PACKAGE, LOCALEDIR);
