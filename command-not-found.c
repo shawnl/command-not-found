@@ -269,10 +269,10 @@ int main(int argc, char *argv[]) {
 			errno = ENOENT;
 			goto fail;
 		}
-		r = seteuid(user->pw_uid);
+		r = setuid(user->pw_uid);
 		if (r < 0)
 			goto fail;
-		r = setegid(user->pw_gid);
+		r = setgid(user->pw_gid);
 		if (r < 0)
 			goto fail;
 	}
