@@ -512,14 +512,14 @@ againleft:
 			"the component called '%s'"), s);
 	fputc('\n', stderr);
 success:
-	return EXIT_SUCCESS;
+	return 127;
 fail:
 	fputs(strerror(errno), stderr);
 	fputc('\n', stderr);
-	return EXIT_FAILURE;
+	return 127;
 bail:
 	fprintf(stderr, _("%s: command not found"), arg_command);
 	fputc('\n', stderr);
-	return EXIT_SUCCESS;
+	return 127;
 }
 
