@@ -1,5 +1,5 @@
 /* command-not-found, finds programs
- * Copyright (C) 2017  Shawn Landden <shawn@git.icu>
+ * Copyright (C) 2017-2019  Shawn Landden <shawn@git.icu>
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public License
