@@ -25,16 +25,17 @@
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
+#include <sys/mman.h>
 #define _ gettext
 
 #include "update-command-not-found.h"
 #include "util.h"
 
 static int collect_contents(FILE *db) {
-	Cleanup(fclosep) FILE *contents_cat = NULL, *apt = NULL, *snap = NULL;
-	char buf[8192], *bin, *pkg, *cmn, *t, *t2, *t3;
-	Cleanup(freep) char *indextargets = NULL, *contents = NULL,
-		*popens = NULL, *snap_db = NULL;
+	Cleanup(fclosep) FILE *contents_cat = NULL, *commands_cat = NULL, *apt = NULL, *snap = NULL;
+	char buf[8192], *bin, *pkg, cmn, *t, *t2, *t3;
+	Cleanup(freep) char *indextargets = NULL, *contents = NULL, *commands = NULL,
+		*popens = NULL, *snap_db = NULL, *popens2 = NULL;
 	int r;
 
 	if (!(apt = popen("apt-get indextargets", "r")))
@@ -47,11 +48,17 @@ static int collect_contents(FILE *db) {
 	t = indextargets;
 	contents = realloc(contents, 1);
 	*contents = '\0';
+	commands = realloc(commands, 1);
+	*commands = '\0';
 	while ((t = strstr(t, "\n\n"))) {
+		bool is_commands = false;
 		t += 2;
 		t = strchrnul(t, '\n'); t++;/*MetaKey:*/
-		if (strncmp(t, "ShortDesc: Contents-", strlen("ShortDesc: Contents-")) != 0)
-			continue;
+		if (strncmp(t, "ShortDesc: Contents-", strlen("ShortDesc: Contents-")) != 0) {
+			if (strncmp(t, "ShortDesc: Commands-", strlen("ShortDesc: Commands-")) != 0)
+				continue;
+			is_commands = true;
+		}
 		t = strchrnul(t, '\n'); t++;/*ShortDesc::*/
 		t = strchrnul(t, '\n'); t++;/*Description:*/
 		t = strchrnul(t, '\n'); t++;/*URI:*/
@@ -60,40 +67,84 @@ static int collect_contents(FILE *db) {
 		t += strlen("Filename: ");
 		t2 = strchrnul(t, '\n');
 		*t2 = '\0';
-		contents = realloc(contents, strlen(contents ? contents : "") + strlen(t) + 1 + 1);
-		strcat(contents, " ");
-		strcat(contents, t);
+		if (is_commands) {
+			// These fds are leaked, but this this process is short lived, so it doesn't matter.
+			int memfd = -1;
+			char memfd_buf[4096];
+			char memfd_name[1024];
+
+			if (strspn(t, " \n"))
+				return -EINVAL;
+			memfd = memfd_create(t, 0);
+			if (memfd < 0)
+				return -errno;
+			// We can safely ignore truncation here.
+			r = snprintf((char *)&memfd_buf, sizeof(memfd_buf), "Section: %s\n", t);
+			if (r < 0)
+				return -errno;
+			r = write(memfd, &memfd_buf, strlen((char *)&memfd_buf));
+			if (r < 0)
+				return -errno;
+
+			// This is a hack to store the Section that the files don't have, for use below.
+			r = snprintf((char *)&memfd_name, sizeof(memfd_name), "/proc/self/fd/%u", memfd);
+			if (r < 0)
+				return -errno;
+			if (r > sizeof(memfd_name))
+				return -E2BIG;
+			commands = realloc(commands, strlen(commands) + 1 + strlen(t) + 1 + strlen((char *)&memfd_name) + 1);
+			strcat(commands, " ");
+			strcat(commands, t);
+			strcat(commands, " ");
+			strcat(commands, (char *)&memfd_name);
+		} else {
+			contents = realloc(contents, strlen(contents) + strlen(t) + 1 + 1);
+			strcat(contents, " ");
+			strcat(contents, t);
+		}
 		*t2 = '\n';
 	};
 
 	r = access("/usr/lib/apt/apt-helper", X_OK);
 	if (r < 0)
 		return -errno;
-	if (strlen(contents) == 0) {
-		puts(_("Contents of packages not available. Install 'apt-file' and then run 'apt update'.\n"));
+	if (strlen(contents) == 0)
+		printf(_("Warning: Full contents of packages not available.%s\n"),
+			strlen(commands) ? _(" You have Commands files, however, so this is not a problem.") : "");
+
+	if (strlen(commands) == 0)
+		puts(_("Warning: No commands listings downloaded via apt."));
+
+	if (access("/usr/bin/snap", X_OK))
+		snap = popen("/usr/bin.snap advise-snap --dump-db", "r");
+	else
+		errno = ENOENT;
+	if (!snap)
+		printf(_("Warning: not including snaps: %m\n"));
+
+	if (strlen(commands) == 0 && strlen(contents) == 0 && !snap) {
+		puts(_("No data! If 'apt update' does not work, install 'apt-file' and then run 'apt update'."));
 		return -ENOENT;
 	}
+
 	r = asprintf(&popens, "/usr/lib/apt/apt-helper cat-file %s", contents);
 	if (r < 0)
 		return -errno;
 
-	snap = popen("snap advise-snap --dump-db");
-	if (!snap)
-		puts(_("Warning: not including snaps: %m"));
+	r = asprintf(&popens2, "/usr/lib/apt/apt-helper cat-file %s", commands);
+	if (r < 0)
+		return -errno;
 
-	if (!(contents_cat = popen(popens,
-		"r")))
+	if (!((contents_cat = popen(popens, "r")) || (commands_cat = popen(popens2, "r"))))
 		return -ENOENT;
-	bool from_snap = false;
+
+	int round = 0;
 	while (true) {
 		struct binary node;
 		bool got_component = false;
+		buf[0] = '\0';
 
-		if (!from_snap) {
-			if (!fgets((char *)&buf, sizeof(buf), contents_cat)) {
-				from_snap = true;
-				continue;
-			}
+		if (round == 0 && contents_cat && fgets((char *)&buf, sizeof(buf), contents_cat)) {
 			if (!memcmp("usr/bin/", &buf, strlen("usr/bin/")) ||
 			    !memcmp("usr/sbin/", &buf, strlen("usr/sbin/")) ||
 			    !memcmp("bin/", &buf, strlen("bin/")) ||
@@ -127,22 +178,54 @@ static int collect_contents(FILE *db) {
 				t2 = strchr(t + 1, '/');
 			if (t2 && strchr(t2 + 1, '/')) {
 				t2[0] = '\0';
-				cmn = t + strspn(t, " \t");
+				cmn = *(t + strspn(t, " \t"));
 				got_component = true;
 			}
-		} else if (snap && fgets((char *)&buf, sizeof(buf), snap)) {
+		} else if (round == 1 && snap && fgets((char *)&buf, sizeof(buf), snap)) {
 			/* We modify buf *in place* */
 			bin = buf;
-			pkg = strchr(buf, " ");
+			pkg = strchr(buf, ' ');
 			if (!pkg)
 				return -EINVAL;
-			pkg++ = '\0';
-			t = strchr(name, " ");
+			pkg = '\0';
+			pkg++;
+			t = strchr(pkg, ' ');
 			if (!t)
 				return -EINVAL;
 			cmn = 's';
-		} else
+		} else if (round == 2 && commands_cat) {
+			do {
+				size_t buflen = strlen(buf);
+				char *c = buf + buflen, *t, *t2;
+				if (buflen == 0) {
+					if (!fgets((char *)&buf + buflen, sizeof(buf) - buflen, commands_cat))
+						break;
+					if (memcmp(c, "name: ", strlen("name: ")) == 0) {
+						node.pkg = c;
+						continue;
+					} else if (node.pkg && memcmp(c, "commands: ", strlen("commands: ")) == 0) {
+						c += strlen("commands: ");
+						break;
+					} else
+						continue;
+					break;
+				}
+				t = strchr(c, ',');
+				if (!t) {
+					t = strchr(c, '\n');
+					if (!t)
+						return -EINVAL;
+					buf[0] = '\0';
+				}
+				*t = '\0';
+			} while (false);
 			break;
+		} else if (round > 2)
+			break;
+		else {
+			round++;
+			continue;
+		}
 
 		node.bin = bin;
 		node.pkg = pkg;
@@ -150,9 +233,9 @@ static int collect_contents(FILE *db) {
 		if (got_component) {
 			node.cmn = cmn;
 		} else
-			node->cmn = 'm';
+			node.cmn = 'm';
 
-		if (node.cmn == 'm') == 0)
+		if (node.cmn == 'm')
 			r = fprintf(db, "%s\xff%s\n", node.bin, node.pkg);
 		else
 			r = fprintf(db, "%s\xff%s/%c\n", node.bin, node.pkg, node.cmn);

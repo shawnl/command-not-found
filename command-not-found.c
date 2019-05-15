@@ -19,6 +19,7 @@
 #include <errno.h>
 #include <fcntl.h>
 #include <getopt.h>
+#include <pwd.h>
 #include <grp.h>
 #include <libintl.h>
 #include <locale.h>
@@ -36,6 +37,9 @@
 
 #include "command-not-found.h"
 #include "bisect.h"
+
+#define USER "debian-command-not-found"
+#define GROUP "debian-command-not-found"
 
 bool arg_ignore_installed = false;
 char *arg_command = NULL;
@@ -257,6 +261,19 @@ int main(int argc, char *argv[]) {
 		goto fail;
 	(void)madvise(file, file_size, MADV_WILLNEED);
 	close(fd);
+
+	struct passwd *user = getpwnam(USER);
+	if (!user) {
+		printf(_("No '%s' user found. Cannot drop permissions. Aborting."), USER);
+		errno = ENOENT;
+		goto fail;
+	}
+	r = setuid(user->pw_uid);
+	if (r < 0)
+		goto fail;
+	r = setgid(user->pw_gid);
+	if (r < 0)
+		goto fail;
 
 	setlocale(LC_ALL, "");
 	bindtextdomain(PACKAGE, LOCALEDIR);

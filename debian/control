@@ -10,7 +10,9 @@ Standards-Version: 4.3.0
 
 Package: command-not-found-ng
 Architecture: any
-Depends: apt-file, apt, ${shlibs:Depends}, ${misc:Depends}
+Depends: apt, ${shlibs:Depends}, ${misc:Depends}
+# Only useful with repositories that do not provide Commands files
+Suggests: apt-file
 Conflicts: command-not-found
 Replaces: command-not-found
 Provides: command-not-found

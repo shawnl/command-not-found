@@ -1,8 +1,21 @@
 #!/bin/sh
 set -e
-if [ -z "$(find /var/cache/command-not-found -mindepth 1)" ]; then
-        echo "You need to run 'update-command-not-found' as root to update the cache."
-fi
+
+adduser --quiet --system --group --home /var/cache/command-not-found \
+   --shell /bin/nologin --no-create-home --disabled-password --disabled-login \
+   --gecos "Command Not Found" debian-command-not-found >/dev/null || {
+   if getent passwd debian-command-not-found || getent group debian-command-not-found; then
+	   echo "Non-system user or group debian-command-not-found found. I will not overwrite a non-system" >&2
+	   echo "user/group. Remove the user and/or group and reinstall." >&2
+	   exit 1
+   fi
+   # unknown adduser error, simply exit
+   exit 1
+}
+
+chown debian-command-not-found:debian-command-not-found -R /var/cache/command-not-found
+echo "Updating command-not-found database."
+update-command-not-found
 
 #DEBHELPER#
 
