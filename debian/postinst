@@ -15,7 +15,7 @@ adduser --quiet --system --group --home /var/cache/command-not-found \
 
 #The deb contains this empty dir, but it is still not being created?????
 mkdir -p /var/cache/command-not-found
-dpkg-statoverride --force-all --update --add debian-command-not-found debian-command-not-found 755 /var/cache/command-not-found
+chown debian-command-not-found:debian-command-not-found -R /var/cache/command-not-found
 echo "Updating command-not-found database."
 update-command-not-found
 
