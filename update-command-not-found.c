@@ -117,12 +117,12 @@ static int collect_contents(FILE *db) {
 	if (strlen(commands) == 0)
 		puts(_("Warning: No commands listings downloaded via apt."));
 
-	if (access("/usr/bin/snap", X_OK))
+	if (access("/usr/bin/snap", X_OK) == 0) {
 		snap = popen("/usr/bin/snap advise-snap --dump-db", "r");
-	else
+	  if (!snap)
+		  printf(_("Warning: not including snaps: %m\n"));
+	} else
 		errno = ENOENT;
-	if (!snap)
-		printf(_("Warning: not including snaps: %m\n"));
 
 	if (strlen(commands) == 0 && strlen(contents) == 0 && !snap) {
 		puts(_("No data! If 'apt update' does not work, install 'apt-file' and then run 'apt update'."));
