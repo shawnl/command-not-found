@@ -152,7 +152,6 @@ static int collect_contents(FILE *db) {
 
 	int round = 0;
 	while (true) {
-		struct binary node;
 		bool done = false;
 		buf[0] = '\0';
 		char commands_cmn = 'm', cmn;
@@ -253,13 +252,10 @@ static int collect_contents(FILE *db) {
 		if (done)
 			break;
 
-		node.bin = bin;
-		node.pkg = pkg;
-
 		if (cmn == 'm')
-			r = fprintf(db, "%s\xff%s\n", node.bin, node.pkg);
+			r = fprintf(db, "%s\xff%s\n", bin, pkg);
 		else
-			r = fprintf(db, "%s\xff%s/%c\n", node.bin, node.pkg, cmn);
+			r = fprintf(db, "%s\xff%s/%c\n", bin, pkg, cmn);
 		if (r < 0)
 			return -errno;
 	};
