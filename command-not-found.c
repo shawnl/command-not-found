@@ -121,7 +121,8 @@ static void spell_check_suggestion_search(const char *command, char *buf, unsign
 	component = strchrnul(package, '/');
 	if (*component == '/') {
 		*strchrnul(component, '\n') = '\0';
-		*component++ = '\0';
+		*component = '\0';
+		component++;
 		s = strv_find_prefix((char **)components, component);
 		if (!s)
 			return;

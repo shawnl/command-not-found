@@ -35,7 +35,7 @@
 
 static int collect_contents(FILE *db) {
 	Cleanup(fclosep) FILE *contents_cat = NULL, *commands_cat = NULL, *apt = NULL, *snap = NULL;
-	char buf[8192], *bin, *pkg, cmn, *t, *t2, *t3;
+	char buf[8192], *bin, *pkg, *t, *t2, *t3;
 	Cleanup(freep) char *indextargets = NULL, *contents = NULL, *commands = NULL,
 		*popens = NULL, *snap_db = NULL, *popens2 = NULL;
 	int r;
@@ -67,6 +67,16 @@ static int collect_contents(FILE *db) {
 		if (strncmp(t, "Filename: ", strlen("Filename: ")) != 0)
 			continue;
 		t += strlen("Filename: ");
+		if (is_commands) {
+			t3 = strstr(t, "_cnf_Commands-");
+			if (!t3)
+				return -EINVAL;
+			*t3 = '\0';
+			t3 = strchr(t, '_');
+			if (!t3)
+				return -EINVAL;
+			t3++;
+		}
 		t2 = strchrnul(t, '\n');
 		*t2 = '\0';
 		if (is_commands) {
@@ -81,7 +91,7 @@ static int collect_contents(FILE *db) {
 			if (memfd < 0)
 				return -errno;
 			// We can safely ignore truncation here.
-			r = snprintf((char *)&memfd_buf, sizeof(memfd_buf), "Section: %s\n", t);
+			r = snprintf((char *)&memfd_buf, sizeof(memfd_buf), "Component: %s\n", t3);
 			if (r < 0)
 				return -errno;
 			r = write(memfd, &memfd_buf, strlen((char *)&memfd_buf));
@@ -143,8 +153,9 @@ static int collect_contents(FILE *db) {
 	int round = 0;
 	while (true) {
 		struct binary node;
-		bool got_component = false;
+		bool done = false;
 		buf[0] = '\0';
+		char commands_cmn = 'm', cmn;
 
 		if (round == 0 && contents_cat && fgets((char *)&buf, sizeof(buf), contents_cat)) {
 			if (!memcmp("usr/bin/", &buf, strlen("usr/bin/")) ||
@@ -181,31 +192,40 @@ static int collect_contents(FILE *db) {
 			if (t2 && strchr(t2 + 1, '/')) {
 				t2[0] = '\0';
 				cmn = *(t + strspn(t, " \t"));
-				got_component = true;
-			}
+			} else
+				cmn =  'm';
 		} else if (round == 1 && snap && fgets((char *)&buf, sizeof(buf), snap)) {
 			/* We modify buf *in place* */
 			bin = buf;
 			pkg = strchr(buf, ' ');
 			if (!pkg)
 				return -EINVAL;
-			pkg = '\0';
+			*pkg = '\0';
 			pkg++;
+			if (pkg - buf >= sizeof(buf))
+				return -EINVAL;
 			t = strchr(pkg, ' ');
 			if (!t)
 				return -EINVAL;
+			*t = '\0';
 			cmn = 's';
 		} else if (round == 2 && commands_cat) {
 			do {
 				size_t buflen = strlen(buf);
-				char *c = buf + buflen, *t, *t2;
+				char *c = buf + buflen;
 				if (buflen == 0) {
-					if (!fgets((char *)&buf + buflen, sizeof(buf) - buflen, commands_cat))
-						break;
-					if (memcmp(c, "name: ", strlen("name: ")) == 0) {
-						node.pkg = c;
+					if (!fgets((char *)&buf + buflen, sizeof(buf) - buflen, commands_cat)) {
+						done = true;
+					}
+					if (memcmp(c, "Component: ", strlen("Component: ")) == 0) {
+						c += strlen("Component: ");
+						commands_cmn = *c;
 						continue;
-					} else if (node.pkg && memcmp(c, "commands: ", strlen("commands: ")) == 0) {
+					}
+					if (memcmp(c, "name: ", strlen("name: ")) == 0) {
+						pkg = c + strlen("name: ");
+						continue;
+					} else if (pkg && memcmp(c, "commands: ", strlen("commands: ")) == 0) {
 						c += strlen("commands: ");
 						break;
 					} else
@@ -220,6 +240,8 @@ static int collect_contents(FILE *db) {
 					buf[0] = '\0';
 				}
 				*t = '\0';
+				bin = c;
+				cmn = commands_cmn;
 			} while (false);
 			break;
 		} else if (round > 2)
@@ -228,19 +250,16 @@ static int collect_contents(FILE *db) {
 			round++;
 			continue;
 		}
+		if (done)
+			break;
 
 		node.bin = bin;
 		node.pkg = pkg;
 
-		if (got_component) {
-			node.cmn = cmn;
-		} else
-			node.cmn = 'm';
-
-		if (node.cmn == 'm')
+		if (cmn == 'm')
 			r = fprintf(db, "%s\xff%s\n", node.bin, node.pkg);
 		else
-			r = fprintf(db, "%s\xff%s/%c\n", node.bin, node.pkg, node.cmn);
+			r = fprintf(db, "%s\xff%s/%c\n", node.bin, node.pkg, cmn);
 		if (r < 0)
 			return -errno;
 	};
