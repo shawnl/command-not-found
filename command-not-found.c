@@ -125,7 +125,7 @@ static void spell_check_suggestion_search(const char *command, char *buf, unsign
 		component++;
 		s = strv_find_prefix((char **)components, component);
 		if (!s)
-			s = "unknown";
+			s = "<unknown>";
 	} else {
 		*(component - 1) = '\0';
 		s = "main";
