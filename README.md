@@ -5,4 +5,4 @@ Suggest installation of packages in interactive bash sessions
  programs not currently installed but available from the repositories.
 
 ### Contributing
-Patches accepted!
+Patches accepted! Tests are wanted.
