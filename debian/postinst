@@ -13,11 +13,13 @@ adduser --quiet --system --group --home /var/cache/command-not-found \
    exit 1
 }
 
-#The deb contains this empty dir, but it is still not being created?????
+# The deb contains this empty dir, but it is still not being created?????
 mkdir -p /var/cache/command-not-found
 chown debian-command-not-found:debian-command-not-found -R /var/cache/command-not-found
 echo "Updating command-not-found database."
-update-command-not-found
+# We ignore failure here, because the package has been successfully installed,
+# and it will give an error to the user.
+update-command-not-found || true
 
 #DEBHELPER#
 
